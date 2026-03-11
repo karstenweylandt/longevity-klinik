@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Longevity Memory">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#ffffff">
+<title>Das Brandenburger Longevity Memory Spiel</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --card-back: #f0f4f0;
+    --card-front: #f5f0e8;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --sage: #7a9e7e;
+    --sage-dark: #4a6e4e;
+    --cream: #1a1a14;
+    --text-dark: #1a1a14;
+    --matched-bg: #e8f0e4;
+    --matched-border: #7a9e7e;
+    --muted: #5a6b5c;
+    --sat: env(safe-area-inset-top, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { height: 100%; }
+
+  body {
+    background: var(--bg);
+    color: #1a1a14;
+    font-family: 'Crimson Pro', serif;
+    min-height: 100%;
+    min-height: -webkit-fill-available;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    padding-top: var(--sat);
+    padding-left: var(--sal);
+    padding-right: var(--sar);
+    padding-bottom: var(--sab);
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.015'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    text-align: center;
+    padding: clamp(1rem, 4vw, 3rem) 1.5rem clamp(0.6rem, 2vw, 1.5rem);
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .subtitle-label {
+    font-size: clamp(0.55rem, 2vw, 0.7rem);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    font-weight: 300;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 6vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.1;
+    color: #1a1a14;
+    margin-bottom: 0.3rem;
+  }
+
+  h1 em { color: var(--gold); font-style: italic; }
+
+  .tagline {
+    font-size: clamp(0.72rem, 2.5vw, 1rem);
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 0.8rem;
+    font-weight: 300;
+  }
+
+  .divider {
+    width: 50px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 0.8rem;
+  }
+
+  .stats {
+    display: flex;
+    gap: clamp(1rem, 5vw, 2.5rem);
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-block { text-align: center; }
+
+  .stat-val {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.1rem, 4vw, 1.5rem);
+    color: var(--gold);
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.15rem;
+  }
+
+  .stat-label {
+    font-size: clamp(0.52rem, 1.6vw, 0.65rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .instructions {
+    font-size: clamp(0.68rem, 2vw, 0.85rem);
+    color: var(--muted);
+    text-align: center;
+    max-width: 420px;
+    line-height: 1.5;
+    margin-bottom: 0.7rem;
+    font-style: italic;
+    position: relative;
+    z-index: 1;
+    padding: 0 1.2rem;
+  }
+
+  .difficulty-bar {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: center;
+    margin-bottom: 0.7rem;
+    position: relative;
+    z-index: 1;
+    padding: 0 1rem;
+  }
+
+  .diff-btn {
+    background: transparent;
+    border: 1px solid var(--sage-dark);
+    color: var(--muted);
+    font-family: 'Crimson Pro', serif;
+    font-size: clamp(0.62rem, 2vw, 0.75rem);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0 clamp(0.8rem, 3vw, 1.2rem);
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .diff-btn:active { opacity: 0.7; }
+  .diff-btn.active { background: var(--sage-dark); border-color: var(--sage); color: #f5f0e8; }
+
+  .legend {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0 1rem 0.6rem;
+    font-size: clamp(0.58rem, 1.8vw, 0.7rem);
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 1px; flex-shrink: 0; }
+
+  .game-area {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 900px;
+    padding: 0 clamp(8px, 2vw, 16px) clamp(1.5rem, 5vw, 3rem);
+    flex: 1;
+  }
+
+  #grid {
+    display: grid;
+    justify-content: center;
+  }
+
+  /* Cards */
+  .card {
+    aspect-ratio: 3/4;
+    cursor: pointer;
+    perspective: 1000px;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card.flipped .card-inner,
+  .card.matched .card-inner {
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+  }
+
+  .card-back, .card-front {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-back {
+    background: var(--card-back);
+    border: 1px solid #c8d8ca;
+    flex-direction: column;
+    gap: 5px;
+    padding: clamp(6px, 1.5vw, 10px);
+  }
+
+  .card-back-inner {
+    width: 65%;
+    height: 65%;
+    border: 1px solid var(--sage-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .card-back-inner::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid #c8d8ca;
+  }
+
+  .card-symbol {
+    font-size: clamp(0.8rem, 2vw, 1.2rem);
+    color: var(--sage-dark);
+    opacity: 0.7;
+  }
+
+  .card-back-label {
+    font-size: clamp(0.38rem, 1vw, 0.5rem);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #8aaa8c;
+  }
+
+  .card-front {
+    background: var(--card-front);
+    border: 1px solid #d4ccb8;
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    flex-direction: column;
+    gap: clamp(2px, 0.7vw, 5px);
+    text-align: center;
+    padding: clamp(5px, 1.2vw, 10px) clamp(4px, 1vw, 8px);
+    overflow: hidden;
+  }
+
+  .card.matched .card-front {
+    background: var(--matched-bg);
+    border-color: var(--matched-border);
+  }
+
+  .card-type-label {
+    font-size: clamp(0.38rem, 1vw, 0.55rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 2px 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .label-intervention {
+    color: var(--sage-dark);
+    background: rgba(74,110,78,0.12);
+    border: 1px solid rgba(74,110,78,0.3);
+  }
+
+  .label-effect {
+    color: #7a5a2a;
+    background: rgba(122,90,42,0.1);
+    border: 1px solid rgba(122,90,42,0.25);
+  }
+
+  .card-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(0.55rem, 1.5vw, 0.85rem);
+    color: var(--text-dark);
+    line-height: 1.2;
+    font-weight: 700;
+    word-break: break-word;
+    hyphens: auto;
+  }
+
+  .card-subtext {
+    font-family: 'Crimson Pro', serif;
+    font-size: clamp(0.46rem, 1.1vw, 0.65rem);
+    color: #555;
+    line-height: 1.2;
+    font-style: italic;
+    font-weight: 300;
+    word-break: break-word;
+  }
+
+  .card-icon {
+    font-size: clamp(0.9rem, 2.5vw, 1.6rem);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+  }
+  .shake { animation: shake 0.35s ease; }
+
+  @keyframes matchPulse {
+    0% { box-shadow: 0 0 0 0 rgba(122,158,126,0.6); }
+    70% { box-shadow: 0 0 0 8px rgba(122,158,126,0); }
+    100% { box-shadow: 0 0 0 0 rgba(122,158,126,0); }
+  }
+  .card.matched { animation: matchPulse 0.5s ease; }
+
+  .win-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.97);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1.2rem;
+    text-align: center;
+    padding: 2rem;
+    padding-bottom: calc(2rem + var(--sab));
+  }
+  .win-overlay.show { display: flex; }
+
+  .win-title { color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 8vw, 4rem);
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .win-sub {
+    font-size: clamp(0.85rem, 3vw, 1.1rem);
+    color: var(--muted);
+    font-style: italic;
+    max-width: 340px;
+    line-height: 1.5;
+  }
+
+  .win-stats { display: flex; gap: 2.5rem; justify-content: center; }
+
+  .btn-restart {
+    background: var(--gold);
+    color: #ffffff;
+    border: none;
+    font-family: 'Crimson Pro', serif;
+    font-size: clamp(0.9rem, 3vw, 1rem);
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.9rem 2.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 0.3rem;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+    min-height: 52px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-restart:active { background: var(--gold-light); }
+
+  /* Landscape phones */
+  @media (max-height: 500px) and (orientation: landscape) {
+    header { padding: 0.4rem 1rem 0.2rem; }
+    h1 { font-size: 1.2rem; }
+    .tagline, .instructions { display: none; }
+    .divider { display: none; }
+    .stats { margin-bottom: 0.2rem; }
+    .difficulty-bar { margin-bottom: 0.4rem; }
+    .legend { padding-bottom: 0.2rem; }
+  }
+
+  /* Tiny phones (iPhone SE 1st gen) */
+  @media (max-width: 320px) {
+    .diff-btn { padding: 0 0.6rem; font-size: 0.58rem; }
+    .stats { gap: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="subtitle-label">Evidenzbasierte Longevity-Wissenschaft</div>
+  <h1>Das Brandenburger<br><em>Longevity</em> Memory Spiel</h1>
+  <div class="tagline">Ordne jede Maßnahme ihrem Wirkungsnachweis zu</div>
+  <div class="divider"></div>
+</header>
+
+<div class="stats">
+  <div class="stat-block">
+    <span class="stat-val" id="movesDisplay">0</span>
+    <span class="stat-label">Züge</span>
+  </div>
+  <div class="stat-block">
+    <span class="stat-val" id="pairsDisplay">0</span>
+    <span class="stat-label">Paare gefunden</span>
+  </div>
+  <div class="stat-block">
+    <span class="stat-val" id="timerDisplay">0:00</span>
+    <span class="stat-label">Zeit</span>
+  </div>
+</div>
+
+<p class="instructions">
+  Finde die passenden Paare: Jede Maßnahmenkarte gehört zu ihrer Evidenzkarte.
+  Basierend auf begutachteter Forschung aus dem Brandenburger Longevity-Klinikbericht.
+</p>
+
+<div class="difficulty-bar">
+  <button class="diff-btn" data-pairs="6">6 Paare</button>
+  <button class="diff-btn active" data-pairs="10">10 Paare</button>
+  <button class="diff-btn" data-pairs="13">Volles Deck</button>
+</div>
+
+<div class="legend">
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#4a6e4e;"></div>
+    Maßnahme
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#7a5a2a;"></div>
+    Wirkungsnachweis
+  </div>
+</div>
+
+<div class="game-area">
+  <div id="grid"></div>
+</div>
+
+<div class="win-overlay" id="winOverlay">
+  <div class="win-title">Ausgezeichnet.</div>
+  <div class="win-sub">Du hast alle Longevity-Maßnahmen ihrem Wirkungsnachweis zugeordnet.</div>
+  <div class="win-stats">
+    <div class="stat-block">
+      <span class="stat-val" id="finalMoves">—</span>
+      <span class="stat-label">Züge gesamt</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-val" id="finalTime">—</span>
+      <span class="stat-label">Zeit</span>
+    </div>
+  </div>
+  <button class="btn-restart" id="restartBtn">Nochmal spielen</button>
+</div>
+
+<script>
+const ALL_PAIRS = [
+  { id:1,  icon:'🚭', intervention:'Rauchstopp',                     interventionSub:'Wirksamste einzelne Maßnahme überhaupt',           effect:'Bis zu 10 Jahre Lebensgewinn; 3-fache Mortalitätssenkung',    effectSub:'British Doctors Study — 50-J.-Kohorte, n=34.439' },
+  { id:2,  icon:'🚶', intervention:'Körperliche Aktivität',           interventionSub:'Schritte + Krafttraining',                         effect:'15 % weniger Sterblichkeit pro 1.000 Schritte/Tag',          effectSub:'Banach et al. 2023 — 17 Kohorten, n=226.889' },
+  { id:3,  icon:'🫒', intervention:'Mediterrane Ernährung',           interventionSub:'Olivenöl, Hülsenfrüchte, Fisch, Vollkorn',         effect:'50 % niedrigeres Sterberisiko über 5–7 Jahre',               effectSub:'PREDIMED + FHILL-Studie — n=818 ältere Personen' },
+  { id:4,  icon:'😴', intervention:'Optimaler Schlaf (7 Std.)',       interventionSub:'Konsolidiert, nicht fragmentiert',                  effect:'Kurz- oder Langschläfer: 12–30 % höhere Sterblichkeit',      effectSub:'Cappuccio et al. 2010 — 1,38 Mio. Teilnehmer' },
+  { id:5,  icon:'🤝', intervention:'Soziale Verbundenheit',           interventionSub:'Reduktion von Isolation und Einsamkeit',           effect:'Isolation ≡ 15 Zigaretten täglich rauchen',                  effectSub:'Holt-Lunstad 2021 — Bevölkerungskohorten' },
+  { id:6,  icon:'🐟', intervention:'Omega-3-Fettsäuren',              interventionSub:'Marines EPA & DHA — nicht pflanzliches ALA',       effect:'15–18 % niedrigere Gesamtsterblichkeit (höchstes vs. niedrigstes Quintil)', effectSub:'Harris et al. 2021 — n=42.466, 17 Kohorten' },
+  { id:7,  icon:'🌾', intervention:'Vollkornprodukte',                interventionSub:'Pro zusätzliche Portion pro Tag',                  effect:'18 % niedrigere Gesamtsterblichkeit; 7 % pro extra Portion', effectSub:'Ma et al. 2016 — n=843.749 Teilnehmer' },
+  { id:8,  icon:'💪', intervention:'Muskelkraft (Griffstärke)',        interventionSub:'Handgriffstärke als Ganzkörper-Marker',            effect:'Inverse Dosis-Wirkung: niedrigere Griffstärke = höhere Sterblichkeit', effectSub:'López-Bueno et al. 2022 — n=3,1 Mio. Teilnehmer' },
+  { id:9,  icon:'🍽️', intervention:'Kalorienrestriktion',            interventionSub:'10–15 % dauerhaftes Kaloriendefizit',             effect:'Verlangsamt biologisches Altern; senkt oxidativen Stress',    effectSub:'CALERIE RCT — Redman et al. 2018' },
+  { id:10, icon:'💊', intervention:'Metformin',                       interventionSub:'AMPK-Aktivierung, mTOR-Hemmung',                   effect:'Reduziert altersbedingte Erkrankungen; TAME-Studie läuft',    effectSub:'Barzilai et al. 2016 — Beobachtung + RCT' },
+  { id:11, icon:'🧬', intervention:'Rapamycin / mTOR-Hemmung',        interventionSub:'Stärkste Tierdaten zur Lebensverlängerung',        effect:'14 % Lebensverlängerung bei Mäusen; keine Humandaten',        effectSub:'Harrison et al. 2009 — ITP-Mausstudie' },
+  { id:12, icon:'⚗️', intervention:'NAD+-Vorstufen (NR/NMN)',        interventionSub:'Nicotinamidribosid, 500–1000 mg/Tag',             effect:'Erhöht NAD+; senkt neurodegenerative Biomarker',              effectSub:'Vreones et al. 2022 — n=22, kleine RCT' },
+  { id:13, icon:'🕰️', intervention:'Epigenetische Uhr verlangsamen', interventionSub:'Omega-3 + Vit. D + Bewegung kombiniert',           effect:'~3 Monate biologischer Altersgewinn über 3 Jahre',            effectSub:'Bischoff-Ferrari et al. 2025 — DO-HEALTH RCT' }
+];
+
+let flipped = [], moves = 0, pairs = 0, totalPairs = 10;
+let timerInterval = null, seconds = 0, locked = false;
+let currentCards = [], gameStarted = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildCards(pairList) {
+  const cards = [];
+  pairList.forEach(p => {
+    cards.push({ pairId: p.id, type: 'intervention', ...p });
+    cards.push({ pairId: p.id, type: 'effect', ...p });
+  });
+  return shuffle(cards);
+}
+
+function formatTime(s) {
+  return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
+}
+
+function startTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  seconds = 0;
+  timerInterval = setInterval(() => {
+    seconds++;
+    document.getElementById('timerDisplay').textContent = formatTime(seconds);
+  }, 1000);
+}
+
+function getLayout() {
+  const vw = window.innerWidth;
+  const isLandscape = window.innerHeight < window.innerWidth;
+  if (vw < 380)       return { cols: 3, gap: 6 };
+  if (vw < 600)       return { cols: isLandscape ? 6 : 4, gap: 7 };
+  if (vw < 900)       return { cols: 5, gap: 10 };
+  return               { cols: 5, gap: 12 };
+}
+
+function render() {
+  const grid = document.getElementById('grid');
+  const { cols, gap } = getLayout();
+  const gameArea = document.querySelector('.game-area');
+  const padH = parseInt(getComputedStyle(gameArea).paddingLeft) * 2;
+  const availW = Math.min(900, window.innerWidth) - padH;
+  const cardW = Math.floor((availW - gap * (cols - 1)) / cols);
+
+  grid.style.gridTemplateColumns = `repeat(${cols}, ${cardW}px)`;
+  grid.style.gap = `${gap}px`;
+  grid.innerHTML = '';
+
+  currentCards.forEach((card) => {
+    const el = document.createElement('div');
+    el.className = 'card';
+
+    const typeLabel = card.type === 'intervention'
+      ? '<span class="card-type-label label-intervention">Maßnahme</span>'
+      : '<span class="card-type-label label-effect">Evidenz</span>';
+
+    const mainText = card.type === 'intervention' ? card.intervention : card.effect;
+    const subText  = card.type === 'intervention' ? card.interventionSub : card.effectSub;
+
+    el.innerHTML = `
+      <div class="card-inner">
+        <div class="card-back">
+          <div class="card-back-inner"><span class="card-symbol">✦</span></div>
+          <span class="card-back-label">Brandenburg</span>
+        </div>
+        <div class="card-front">
+          ${typeLabel}
+          <div class="card-icon">${card.icon}</div>
+          <div class="card-text">${mainText}</div>
+          <div class="card-subtext">${subText}</div>
+        </div>
+      </div>`;
+
+    // touchend for snappy mobile response; prevent ghost click with preventDefault
+    el.addEventListener('touchend', (e) => { e.preventDefault(); onCardClick(el, card); }, { passive: false });
+    el.addEventListener('click', () => onCardClick(el, card));
+    grid.appendChild(el);
+  });
+}
+
+function onCardClick(el, card) {
+  if (locked) return;
+  if (el.classList.contains('flipped') || el.classList.contains('matched')) return;
+  if (flipped.length >= 2) return;
+
+  if (!gameStarted) { gameStarted = true; startTimer(); }
+
+  el.classList.add('flipped');
+  flipped.push({ el, card });
+
+  if (flipped.length === 2) {
+    moves++;
+    document.getElementById('movesDisplay').textContent = moves;
+    locked = true;
+
+    const [a, b] = flipped;
+    if (a.card.pairId === b.card.pairId && a.card.type !== b.card.type) {
+      setTimeout(() => {
+        a.el.classList.add('matched');
+        b.el.classList.add('matched');
+        pairs++;
+        document.getElementById('pairsDisplay').textContent = pairs;
+        flipped = [];
+        locked = false;
+        if (pairs === totalPairs) {
+          clearInterval(timerInterval); timerInterval = null;
+          setTimeout(showWin, 600);
+        }
+      }, 350);
+    } else {
+      setTimeout(() => {
+        a.el.classList.add('shake');
+        b.el.classList.add('shake');
+        setTimeout(() => {
+          a.el.classList.remove('flipped', 'shake');
+          b.el.classList.remove('flipped', 'shake');
+          flipped = [];
+          locked = false;
+        }, 450);
+      }, 650);
+    }
+  }
+}
+
+function showWin() {
+  document.getElementById('finalMoves').textContent = moves;
+  document.getElementById('finalTime').textContent = formatTime(seconds);
+  document.getElementById('winOverlay').classList.add('show');
+}
+
+function restartGame() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  flipped = []; moves = 0; pairs = 0; seconds = 0; locked = false; gameStarted = false;
+  document.getElementById('movesDisplay').textContent = '0';
+  document.getElementById('pairsDisplay').textContent = '0';
+  document.getElementById('timerDisplay').textContent = '0:00';
+  document.getElementById('winOverlay').classList.remove('show');
+  currentCards = buildCards(shuffle(ALL_PAIRS).slice(0, totalPairs));
+  render();
+}
+
+// Difficulty buttons
+document.querySelectorAll('.diff-btn').forEach(btn => {
+  const activate = () => {
+    document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    totalPairs = parseInt(btn.dataset.pairs);
+    restartGame();
+  };
+  btn.addEventListener('touchend', (e) => { e.preventDefault(); activate(); }, { passive: false });
+  btn.addEventListener('click', activate);
+});
+
+// Restart button
+const rb = document.getElementById('restartBtn');
+rb.addEventListener('touchend', (e) => { e.preventDefault(); restartGame(); }, { passive: false });
+rb.addEventListener('click', restartGame);
+
+// Responsive re-render
+let resizeTimer;
+window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(render, 150); });
+window.addEventListener('orientationchange', () => { setTimeout(render, 300); });
+
+// Init
+currentCards = buildCards(shuffle(ALL_PAIRS).slice(0, totalPairs));
+render();
+</script>
+</body>
+</html>

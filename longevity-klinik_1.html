@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Longevity Klinik – Evidenzbasierte Medizin für ein längeres Leben</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:      #0f1a14;
+  --sage:     #3d6b4f;
+  --sage-mid: #5a8c6a;
+  --sage-lt:  #a8c5b0;
+  --cream:    #f5f0e8;
+  --warm:     #ede6d6;
+  --gold:     #b8965a;
+  --gold-lt:  #d4b880;
+  --muted:    #6b7a6f;
+  --white:    #ffffff;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); overflow-x: hidden; }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.2rem 4rem;
+  background: rgba(245,240,232,0.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(61,107,79,0.12); transition: box-shadow 0.3s;
+}
+nav.scrolled { box-shadow: 0 2px 24px rgba(15,26,20,0.08); }
+.nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 600; color: var(--sage); letter-spacing: 0.02em; text-decoration: none; }
+.nav-logo span { color: var(--gold); }
+.nav-links { display: flex; gap: 2.2rem; list-style: none; }
+.nav-links a { font-size: 0.82rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover { color: var(--sage); }
+.nav-cta { background: var(--sage); color: var(--white); border: none; padding: 0.6rem 1.4rem; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; text-decoration: none; }
+.nav-cta:hover { background: var(--sage-mid); }
+
+.hero { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; padding-top: 5rem; position: relative; overflow: hidden; }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: radial-gradient(ellipse 60% 80% at 70% 50%, rgba(61,107,79,0.07) 0%, transparent 70%), radial-gradient(ellipse 40% 60% at 10% 80%, rgba(184,150,90,0.05) 0%, transparent 60%); }
+.hero-left { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; padding: 6rem 4rem 6rem 6rem; }
+.hero-tag { display: inline-block; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--gold-lt); padding: 0.35rem 0.9rem; margin-bottom: 2rem; width: fit-content; }
+.hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 5vw, 5.2rem); font-weight: 300; line-height: 1.08; color: var(--ink); margin-bottom: 1.8rem; }
+.hero h1 em { font-style: italic; color: var(--sage); }
+.hero-sub { font-size: 1.05rem; line-height: 1.7; color: var(--muted); max-width: 440px; margin-bottom: 3rem; }
+.hero-actions { display: flex; gap: 1rem; align-items: center; }
+.btn-primary { background: var(--sage); color: var(--white); padding: 0.9rem 2.2rem; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; transition: background 0.2s, transform 0.2s; display: inline-block; }
+.btn-primary:hover { background: var(--sage-mid); transform: translateY(-1px); }
+.btn-ghost { color: var(--sage); font-size: 0.85rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: gap 0.2s; }
+.btn-ghost:hover { gap: 0.8rem; }
+.hero-right { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; padding: 6rem 5rem 6rem 2rem; }
+.hero-card-stack { position: relative; width: 360px; height: 420px; }
+.hero-card { position: absolute; background: var(--white); border: 1px solid rgba(61,107,79,0.12); padding: 2rem; box-shadow: 0 8px 40px rgba(15,26,20,0.08); }
+.hero-card:nth-child(1) { top: 0; left: 20px; width: 300px; transform: rotate(-2deg); }
+.hero-card:nth-child(2) { top: 60px; left: 0; width: 320px; z-index: 2; transform: rotate(1deg); }
+.hero-card:nth-child(3) { top: 130px; left: 30px; width: 310px; z-index: 3; }
+.hero-card-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.6rem; }
+.hero-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; color: var(--ink); margin-bottom: 0.5rem; }
+.hero-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+.hero-stat { display: flex; gap: 0.6rem; margin-top: 0.8rem; align-items: baseline; }
+.hero-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; color: var(--sage); }
+.hero-stat-desc { font-size: 0.78rem; color: var(--muted); }
+
+section { padding: 7rem 6rem; }
+.section-tag { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; display: block; }
+.section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 3.5vw, 3.2rem); font-weight: 300; line-height: 1.15; margin-bottom: 1.2rem; }
+.section-title em { font-style: italic; color: var(--sage); }
+.section-intro { font-size: 1rem; line-height: 1.75; color: var(--muted); max-width: 640px; margin-bottom: 4rem; }
+
+/* TOOLS SECTION */
+.tools { background: var(--warm); }
+.tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.tool-card {
+  background: var(--white);
+  border: 1px solid rgba(61,107,79,0.15);
+  padding: 2.8rem;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  text-decoration: none; color: inherit;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.tool-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(15,26,20,0.12); }
+.tool-card::after {
+  content: '→';
+  position: absolute; bottom: 2rem; right: 2rem;
+  font-size: 1.4rem; color: var(--sage-lt);
+  transition: color 0.2s, right 0.2s;
+}
+.tool-card:hover::after { color: var(--sage); right: 1.6rem; }
+.tool-icon { font-size: 2.4rem; margin-bottom: 1.2rem; }
+.tool-tag { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.7rem; }
+.tool-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 600; margin-bottom: 0.8rem; }
+.tool-card p { font-size: 0.88rem; line-height: 1.65; color: var(--muted); max-width: 380px; }
+.tool-badge {
+  display: inline-block; margin-top: 1.2rem;
+  font-size: 0.75rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 0.35rem 0.8rem; border: 1px solid var(--sage-lt); color: var(--sage);
+}
+
+.pillars { background: var(--white); }
+.pillars-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid rgba(61,107,79,0.1); }
+.pillar { padding: 2.8rem 2.4rem; border-right: 1px solid rgba(61,107,79,0.1); border-bottom: 1px solid rgba(61,107,79,0.1); transition: background 0.25s; cursor: default; }
+.pillar:nth-child(3n) { border-right: none; }
+.pillar:hover { background: rgba(61,107,79,0.03); }
+.pillar-icon { width: 42px; height: 42px; margin-bottom: 1.4rem; display: flex; align-items: center; justify-content: center; background: rgba(61,107,79,0.08); color: var(--sage); font-size: 1.3rem; }
+.pillar h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; margin-bottom: 0.8rem; }
+.pillar p { font-size: 0.88rem; line-height: 1.65; color: var(--muted); }
+.pillar-evidence { margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid rgba(61,107,79,0.1); font-size: 0.75rem; color: var(--sage); font-weight: 500; }
+
+.tiers { background: var(--ink); }
+.tiers .section-title { color: var(--cream); }
+.tiers .section-tag { color: var(--gold); }
+.tiers .section-intro { color: rgba(245,240,232,0.6); }
+.tier-list { display: flex; flex-direction: column; gap: 1.5rem; }
+.tier-row { display: grid; grid-template-columns: 160px 1fr; gap: 2rem; align-items: start; padding: 2rem; border: 1px solid rgba(245,240,232,0.08); transition: border-color 0.25s, background 0.25s; }
+.tier-row:hover { border-color: rgba(61,107,79,0.4); background: rgba(61,107,79,0.05); }
+.tier-badge { display: flex; flex-direction: column; gap: 0.4rem; }
+.tier-label { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
+.tier-name { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: var(--cream); line-height: 1.1; }
+.tier-items { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.tier-item { background: rgba(245,240,232,0.06); border: 1px solid rgba(245,240,232,0.12); color: rgba(245,240,232,0.8); padding: 0.45rem 0.9rem; font-size: 0.82rem; transition: background 0.2s, border-color 0.2s; }
+.tier-item:hover { background: rgba(61,107,79,0.25); border-color: var(--sage-mid); color: var(--cream); }
+.tier-item.highlight { background: rgba(61,107,79,0.2); border-color: var(--sage-mid); color: var(--sage-lt); }
+
+.interventions { background: var(--cream); }
+.interventions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: rgba(61,107,79,0.1); }
+.intervention-card { background: var(--cream); padding: 3rem; position: relative; overflow: hidden; transition: background 0.3s; }
+.intervention-card:hover { background: var(--warm); }
+.intervention-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 0; background: var(--sage); transition: height 0.4s; }
+.intervention-card:hover::before { height: 100%; }
+.int-number { font-family: 'Cormorant Garamond', serif; font-size: 4rem; font-weight: 300; color: rgba(61,107,79,0.12); position: absolute; top: 1rem; right: 1.5rem; line-height: 1; }
+.int-tag { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.8rem; }
+.int-title { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 600; margin-bottom: 1rem; line-height: 1.2; }
+.int-body { font-size: 0.88rem; line-height: 1.7; color: var(--muted); margin-bottom: 1.4rem; }
+.int-stat { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+.int-stat-val { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; color: var(--sage); }
+.int-stat-lbl { font-size: 0.72rem; color: var(--muted); }
+
+.omega { background: var(--sage); }
+.omega .section-tag { color: var(--gold-lt); }
+.omega .section-title { color: var(--white); }
+.omega .section-intro { color: rgba(255,255,255,0.75); }
+.omega-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+.omega-studies { display: flex; flex-direction: column; gap: 1.2rem; }
+.omega-study { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 1.6rem 1.8rem; transition: background 0.25s; }
+.omega-study:hover { background: rgba(255,255,255,0.13); }
+.omega-study-meta { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-lt); margin-bottom: 0.5rem; }
+.omega-study h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 600; color: var(--white); margin-bottom: 0.5rem; }
+.omega-study p { font-size: 0.83rem; line-height: 1.6; color: rgba(255,255,255,0.72); }
+.omega-confidence { display: inline-block; margin-top: 0.6rem; font-size: 0.68rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.6rem; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.6); }
+.omega-callout { background: rgba(255,255,255,0.1); border-left: 3px solid var(--gold); padding: 2rem; margin-bottom: 2rem; }
+.omega-callout h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--white); margin-bottom: 0.8rem; }
+.omega-callout p { font-size: 0.88rem; line-height: 1.7; color: rgba(255,255,255,0.78); }
+.omega-index-box { background: rgba(184,150,90,0.15); border: 1px solid var(--gold-lt); padding: 1.8rem; }
+.omega-index-box h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--gold-lt); font-weight: 600; margin-bottom: 0.6rem; }
+.omega-index-box p { font-size: 0.85rem; color: rgba(255,255,255,0.75); line-height: 1.65; }
+.omega-target { display: flex; align-items: baseline; gap: 0.5rem; margin-top: 1rem; }
+.omega-target-num { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 600; color: var(--gold-lt); }
+.omega-target-desc { font-size: 0.82rem; color: rgba(255,255,255,0.65); }
+
+.prevention { background: var(--white); }
+.prevention-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2.5rem; }
+.prev-card { border: 1px solid rgba(61,107,79,0.12); padding: 2.4rem; position: relative; transition: box-shadow 0.3s, transform 0.3s; }
+.prev-card:hover { box-shadow: 0 12px 40px rgba(15,26,20,0.1); transform: translateY(-3px); }
+.prev-card-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.prev-card-accent.cancer { background: linear-gradient(90deg, var(--gold), var(--gold-lt)); }
+.prev-card-accent.lipid  { background: linear-gradient(90deg, var(--sage), var(--sage-mid)); }
+.prev-card-accent.meta   { background: linear-gradient(90deg, #7a6b8a, #a08ab8); }
+.prev-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.6rem; margin-top: 1rem; }
+.prev-card-sub { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+.prev-card p { font-size: 0.87rem; line-height: 1.68; color: var(--muted); margin-bottom: 1.2rem; }
+.prev-list { list-style: none; }
+.prev-list li { font-size: 0.83rem; padding: 0.45rem 0; border-bottom: 1px solid rgba(61,107,79,0.07); color: var(--ink); display: flex; align-items: flex-start; gap: 0.6rem; }
+.prev-list li::before { content: '→'; color: var(--sage); flex-shrink: 0; margin-top: 0.05rem; }
+
+.biomarkers { background: var(--warm); }
+.biomarker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(61,107,79,0.12); }
+.biomarker-cell { background: var(--warm); padding: 1.8rem 1.5rem; transition: background 0.2s; }
+.biomarker-cell:hover { background: var(--cream); }
+.bm-cat { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.8rem; }
+.bm-items { display: flex; flex-direction: column; gap: 0.4rem; }
+.bm-item { font-size: 0.82rem; color: var(--ink); padding: 0.3rem 0; border-bottom: 1px solid rgba(61,107,79,0.08); }
+.bm-item:last-child { border-bottom: none; }
+
+.process { background: var(--cream); }
+.process-steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; position: relative; }
+.process-steps::before { content: ''; position: absolute; top: 2.2rem; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, var(--sage-lt), transparent); }
+.step { padding: 0 1.5rem; text-align: center; position: relative; }
+.step-num { width: 44px; height: 44px; background: var(--sage); color: var(--white); font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 600; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.2rem; position: relative; z-index: 1; }
+.step h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+.step p { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+.disclaimer { background: rgba(61,107,79,0.06); border-left: 3px solid var(--sage-lt); padding: 1.4rem 2rem; margin: 0 6rem; font-size: 0.8rem; color: var(--muted); line-height: 1.65; }
+
+.cta-section { background: var(--ink); padding: 7rem 6rem; text-align: center; }
+.cta-section h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.2rem, 4vw, 3.8rem); font-weight: 300; color: var(--cream); margin-bottom: 1.2rem; }
+.cta-section h2 em { font-style: italic; color: var(--gold-lt); }
+.cta-section p { color: rgba(245,240,232,0.6); font-size: 1rem; margin-bottom: 2.5rem; }
+.cta-group { display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; }
+.btn-gold { background: var(--gold); color: var(--white); padding: 1rem 2.5rem; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; transition: background 0.2s; }
+.btn-gold:hover { background: var(--gold-lt); }
+.btn-outline-light { border: 1px solid rgba(245,240,232,0.3); color: var(--cream); padding: 1rem 2.5rem; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; transition: border-color 0.2s, background 0.2s; }
+.btn-outline-light:hover { border-color: var(--sage-lt); background: rgba(61,107,79,0.15); }
+
+footer { background: var(--ink); border-top: 1px solid rgba(245,240,232,0.08); padding: 3rem 6rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
+.footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 600; color: var(--sage-lt); }
+.footer-logo span { color: var(--gold); }
+.footer-note { font-size: 0.75rem; color: rgba(245,240,232,0.35); max-width: 480px; line-height: 1.6; }
+.footer-links { display: flex; gap: 1.8rem; }
+.footer-links a { font-size: 0.78rem; color: rgba(245,240,232,0.4); text-decoration: none; letter-spacing: 0.05em; transition: color 0.2s; }
+.footer-links a:hover { color: var(--sage-lt); }
+
+.fade-up { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 960px) {
+  nav { padding: 1rem 2rem; }
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; }
+  .hero-right { display: none; }
+  .hero-left { padding: 4rem 2.5rem; }
+  section { padding: 5rem 2.5rem; }
+  .pillars-grid { grid-template-columns: 1fr; }
+  .interventions-grid { grid-template-columns: 1fr; }
+  .omega-grid { grid-template-columns: 1fr; }
+  .prevention-grid { grid-template-columns: 1fr; }
+  .biomarker-grid { grid-template-columns: 1fr 1fr; }
+  .process-steps { grid-template-columns: 1fr; }
+  .process-steps::before { display: none; }
+  .tier-row { grid-template-columns: 1fr; gap: 1rem; }
+  .disclaimer { margin: 0 2.5rem; }
+  .tools-grid { grid-template-columns: 1fr; }
+  footer { padding: 2.5rem; flex-direction: column; text-align: center; }
+  .footer-links { flex-wrap: wrap; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<nav id="mainNav">
+  <a class="nav-logo" href="#"><span>L</span>ongevity Klinik</a>
+  <ul class="nav-links">
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#ansatz">Ansatz</a></li>
+    <li><a href="#interventionen">Interventionen</a></li>
+    <li><a href="#praevention">Prävention</a></li>
+    <li><a href="#biomarker">Biomarker</a></li>
+    <li><a href="#ablauf">Ablauf</a></li>
+  </ul>
+  <a class="nav-cta" href="#kontakt">Termin anfragen</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-left fade-up">
+    <span class="hero-tag">Evidenzbasierte Langlebigkeitsmedizin</span>
+    <h1>Länger leben.<br><em>Besser</em> leben.<br>Mit Wissenschaft.</h1>
+    <p class="hero-sub">Unsere Klinik vereint die neuesten Erkenntnisse aus Epidemiologie, klinischen Studien und molekularer Biologie zu einer individuellen Strategie für Ihre Langlebigkeit – ohne Mythen, nur mit belegter Evidenz.</p>
+    <div class="hero-actions">
+      <a href="#kontakt" class="btn-primary">Erstgespräch vereinbaren</a>
+      <a href="#ansatz" class="btn-ghost">Unser Ansatz →</a>
+    </div>
+  </div>
+  <div class="hero-right fade-up">
+    <div class="hero-card-stack">
+      <div class="hero-card">
+        <div class="hero-card-label">Omega-3 Index</div>
+        <h3>Zielwert ≥ 8%</h3>
+        <p>EPA+DHA-Anteil in Erythrozytenmembranen als Biomarker für kardiovaskuläres und Langlebigkeitsrisiko.</p>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-label">Schrittzahl & Mortalität</div>
+        <h3>–15% pro 1.000 Schritte</h3>
+        <p>Meta-Analyse, 17 Kohorten, 226.889 Teilnehmer (Banach et al., 2023)</p>
+        <div class="hero-stat">
+          <span class="hero-stat-num">3.867</span>
+          <span class="hero-stat-desc">Schritte/Tag als klinischer Schwellenwert</span>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-label">Epigenetisches Alter</div>
+        <h3>Biologisches Altern messbar</h3>
+        <p>DNA-Methylierungsuhren (PhenoAge, GrimAge, DunedinPACE) als Verlaufsparameter.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTERACTIVE TOOLS -->
+<section class="tools" id="tools">
+  <span class="section-tag">Interaktive Tools</span>
+  <h2 class="section-title">Longevity <em>zum Erleben</em></h2>
+  <p class="section-intro">Probieren Sie unsere interaktiven Tools aus – ein lehrreiches Gedächtnisspiel zu Langlebigkeitsinterventionen und unser OmegaLab-Webshop für Omega-3-Analysen.</p>
+  <div class="tools-grid fade-up">
+    <a class="tool-card" href="memory-spiel.html" target="_blank">
+      <div class="tool-icon">🧠</div>
+      <div class="tool-tag">Lernspiel</div>
+      <h3>Brandenburger Longevity Memory</h3>
+      <p>Testen Sie Ihr Wissen über evidenzbasierte Langlebigkeitsinterventionen in einem interaktiven Gedächtnisspiel. Entwickelt an der MHB Fontane – Medizinische Hochschule Brandenburg.</p>
+      <span class="tool-badge">Jetzt spielen →</span>
+    </a>
+    <a class="tool-card" href="omegalab-shop.html" target="_blank">
+      <div class="tool-icon">🐟</div>
+      <div class="tool-tag">OmegaLab · Analyse-Service</div>
+      <h3>Omega-3-Fettsäureanalyse</h3>
+      <p>GC-FID-basierte Analyse Ihres Omega-3-Index aus getrocknetem Blut (DBS). Entwickelt im Labor der MHB Fontane unter Leitung von Prof. Dr. Karsten Weylandt. Klinisch validiert, einfach anwendbar.</p>
+      <span class="tool-badge">Zum OmegaLab-Shop →</span>
+    </a>
+  </div>
+</section>
+
+<!-- PILLARS -->
+<section class="pillars" id="ansatz">
+  <span class="section-tag">Unser Ansatz</span>
+  <h2 class="section-title">Sechs Säulen der <em>evidenzbasierten</em> Langlebigkeit</h2>
+  <p class="section-intro">Jede Empfehlung basiert auf publizierten Daten aus klinischen Studien oder großen prospektiven Kohortenstudien. Tierexperimentelle Befunde ohne humane Evidenz werden als solche kenntlich gemacht.</p>
+  <div class="pillars-grid fade-up">
+    <div class="pillar">
+      <div class="pillar-icon">♥</div>
+      <h3>Lebensstil & Prävention</h3>
+      <p>Bewegung, Ernährung, Schlaf und soziale Einbindung bilden das Fundament jeder Langlebigkeitsstrategie. Die Effektgrößen dieser Maßnahmen übertreffen die meisten pharmakologischen Optionen.</p>
+      <div class="pillar-evidence">Evidenzgrad: Hoch · Humandaten vorhanden</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">🧬</div>
+      <h3>Biologisches Altern messen</h3>
+      <p>Epigenetische Uhren, Telomerlänge, PhenoAge und funktionelle Tests geben Auskunft über das biologische Alter – unabhängig vom Geburtsdatum.</p>
+      <div class="pillar-evidence">Evidenzgrad: Moderat-Hoch · Validierte Algorithmen</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">🐟</div>
+      <h3>Omega-3 & Lipidoptimierung</h3>
+      <p>Langkettige marine Omega-3-Fettsäuren (EPA, DHA) sind mit 15–18% niedrigerer Gesamtmortalität assoziiert. Gleichzeitig ist die LDL- und ApoB-Senkung eine der evidenzstärksten Maßnahmen der Kardioprotektion.</p>
+      <div class="pillar-evidence">Evidenzgrad: Moderat-Hoch · 42.466 Teilnehmer in Poolanalyse</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">🛡</div>
+      <h3>Krebsfrüherkennung</h3>
+      <p>Strukturierte Screening-Programme für kolorektales Karzinom, Mamma-, Prostata-, Lungen- und Hautkarzinom gemäß leitliniengerechter Empfehlung reduzieren die krebsbedingte Mortalität messbar.</p>
+      <div class="pillar-evidence">Evidenzgrad: Hoch · S3-Leitlinien / AWMF</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">💊</div>
+      <h3>Pharmakologische Adjuvanzien</h3>
+      <p>Metformin (TAME-Studie), NAD+-Vorläufer (NR/NMN) und Statine haben unterschiedliche Evidenzlagen – wir kommunizieren diese transparent und empfehlen nur auf Basis belegter Indikationen.</p>
+      <div class="pillar-evidence">Evidenzgrad: Moderat · Individuelle Nutzen-Risiko-Abwägung</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">🧠</div>
+      <h3>Psychosoziale Gesundheit</h3>
+      <p>Soziale Isolation erhöht die Mortalität äquivalent zum Rauchen von 15 Zigaretten täglich. Stressreduktion, mentale Gesundheit und Gemeinschaftseinbindung sind keine Softfaktoren, sondern harte Endpunkte.</p>
+      <div class="pillar-evidence">Evidenzgrad: Hoch · Meta-Analysen großer Kohorten</div>
+    </div>
+  </div>
+</section>
+
+<!-- TIERS -->
+<section class="tiers" id="interventionen">
+  <span class="section-tag">Evidenzhierarchie</span>
+  <h2 class="section-title fade-up" style="color:var(--cream)">Was funktioniert – und <em>wie gut</em>?</h2>
+  <p class="section-intro fade-up">Unsere Interventionen sind nach Evidenzstärke in vier Stufen gegliedert. Tier 1 basiert auf konsistenten Humandaten mit harten Endpunkten; Tier 4 auf vielversprechenden, aber noch unzureichenden Daten.</p>
+  <div class="tier-list">
+    <div class="tier-row fade-up">
+      <div class="tier-badge"><span class="tier-label">Stufe 1</span><span class="tier-name">Muss</span></div>
+      <div class="tier-items">
+        <span class="tier-item highlight">Rauchstopp</span>
+        <span class="tier-item highlight">Körperliche Aktivität (aerob + Kraft)</span>
+        <span class="tier-item highlight">Mediterrane Ernährung inkl. fettem Fisch</span>
+        <span class="tier-item highlight">7 Stunden Schlaf</span>
+        <span class="tier-item highlight">Soziale Einbindung</span>
+        <span class="tier-item highlight">LDL-/ApoB-Senkung (bei Risiko)</span>
+        <span class="tier-item highlight">Krebsscreening nach Leitlinie</span>
+      </div>
+    </div>
+    <div class="tier-row fade-up">
+      <div class="tier-badge"><span class="tier-label">Stufe 2</span><span class="tier-name">Dringend empfohlen</span></div>
+      <div class="tier-items">
+        <span class="tier-item">Omega-3-Supplementierung (1–2 g EPA+DHA/Tag)</span>
+        <span class="tier-item">Kalorienreduktion / Intervallfasten</span>
+        <span class="tier-item">Alkohol auf &lt; 1 Einheit/Tag reduzieren</span>
+        <span class="tier-item">Blutdruck &lt; 130/80 mmHg</span>
+        <span class="tier-item">Gewichtsoptimierung (BMI 22–25)</span>
+        <span class="tier-item">Stressmanagement / CBT</span>
+      </div>
+    </div>
+    <div class="tier-row fade-up">
+      <div class="tier-badge"><span class="tier-label">Stufe 3</span><span class="tier-name">Individuell diskutieren</span></div>
+      <div class="tier-items">
+        <span class="tier-item">Metformin (off-label, selektierte Patienten)</span>
+        <span class="tier-item">NAD+-Vorläufer (NR / NMN)</span>
+        <span class="tier-item">Vitamin D Optimierung</span>
+        <span class="tier-item">Darmmikrobiom-Intervention</span>
+      </div>
+    </div>
+    <div class="tier-row fade-up">
+      <div class="tier-badge"><span class="tier-label">Stufe 4</span><span class="tier-name">Nur beobachten</span></div>
+      <div class="tier-items">
+        <span class="tier-item">Rapamycin (mTOR-Inhibition)</span>
+        <span class="tier-item">Senolytica (Dasatinib/Quercetin)</span>
+        <span class="tier-item">GLP-1-Agonisten als Langlebigkeitsintervention</span>
+        <span class="tier-item">Plasmapherese / Apherese (anti-aging)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTERVENTIONS -->
+<section class="interventions">
+  <span class="section-tag">Kerndaten</span>
+  <h2 class="section-title">Die wichtigsten Interventionen <em>im Detail</em></h2>
+  <p class="section-intro">Ausgewählte Studien und Effektgrößen aus unserem evidenzbasierten Longevity-Report.</p>
+  <div class="interventions-grid fade-up">
+    <div class="intervention-card">
+      <span class="int-number">01</span>
+      <div class="int-tag">Bewegung</div>
+      <h3 class="int-title">Schrittzahl & Mortalität</h3>
+      <p class="int-body">Banach et al. (2023), 226.889 Teilnehmer aus 17 Kohortenstudien: dosisabhängige Beziehung zwischen täglicher Schrittzahl und Gesamtmortalität. Bereits ab 3.867 Schritte/Tag beginnt der Überlebensvorteil – weit unterhalb des 10.000-Schritte-Ziels.</p>
+      <div class="int-stat">
+        <div class="int-stat-item"><div class="int-stat-val">–15%</div><div class="int-stat-lbl">Gesamtmortalität<br>pro 1.000 Schritte/Tag</div></div>
+        <div class="int-stat-item"><div class="int-stat-val">–7%</div><div class="int-stat-lbl">kardiovask. Mortalität<br>pro 500 Schritte/Tag</div></div>
+      </div>
+    </div>
+    <div class="intervention-card">
+      <span class="int-number">02</span>
+      <div class="int-tag">Schlaf</div>
+      <h3 class="int-title">7 Stunden – der optimale Wert</h3>
+      <p class="int-body">Cappuccio et al. (2010), 1,38 Millionen Teilnehmer; Yin et al. (2017): U-förmige Kurve mit Mortalitätsminimum bei 7 Stunden Schlafdauer. Sowohl Kurzschläfer als auch Langschläfer haben erhöhtes Sterberisiko.</p>
+      <div class="int-stat">
+        <div class="int-stat-item"><div class="int-stat-val">+12%</div><div class="int-stat-lbl">Mortalitätsrisiko<br>bei &lt; 7 Std.</div></div>
+        <div class="int-stat-item"><div class="int-stat-val">+30%</div><div class="int-stat-lbl">Mortalitätsrisiko<br>bei &gt; 8 Std.</div></div>
+      </div>
+    </div>
+    <div class="intervention-card">
+      <span class="int-number">03</span>
+      <div class="int-tag">Ernährung</div>
+      <h3 class="int-title">Mediterrane Ernährung</h3>
+      <p class="int-body">PREDIMED + FHILL-Studie: Mediterrane Ernährung senkt Sterberisiko um bis zu 50% über 5–7 Jahre. Prof. Hu (Harvard, 2023): Kombination gesunder Faktoren verlängert krankheitsfreie Lebenserwartung um 8–10 Jahre.</p>
+      <div class="int-stat">
+        <div class="int-stat-item"><div class="int-stat-val">–50%</div><div class="int-stat-lbl">Sterberisiko<br>über 5–7 Jahre</div></div>
+        <div class="int-stat-item"><div class="int-stat-val">+8–10</div><div class="int-stat-lbl">Jahre krankheitsfreie<br>Lebenserwartung</div></div>
+      </div>
+    </div>
+    <div class="intervention-card">
+      <span class="int-number">04</span>
+      <div class="int-tag">Muskelkraft</div>
+      <h3 class="int-title">Handgriffdynamometrie</h3>
+      <p class="int-body">López-Bueno et al. (2022), 48 Studien, 3,13 Millionen Teilnehmer: nahezu lineare inverse Beziehung zwischen Griffstärke (26–50 kg) und Gesamtmortalität. Handgriffstärke als Pflicht-Biomarker in unserem Protokoll.</p>
+      <div class="int-stat">
+        <div class="int-stat-item"><div class="int-stat-val">3,1 Mio.</div><div class="int-stat-lbl">Studienteilnehmer<br>in der Meta-Analyse</div></div>
+        <div class="int-stat-item"><div class="int-stat-val">Linear</div><div class="int-stat-lbl">Dosis-Wirkungs-<br>Beziehung</div></div>
+      </div>
+    </div>
+    <div class="intervention-card">
+      <span class="int-number">05</span>
+      <div class="int-tag">Kalorienrestriktion</div>
+      <h3 class="int-title">CALERIE-Studie</h3>
+      <p class="int-body">Redman et al. (2018): 15% Kalorienreduktion über 2 Jahre reduziert oxidativen Stress (F2-Isoprostane) und verlangsamt biologisches Altern, gemessen mit PhenoAge und Klemera-Doubal-Algorithmus.</p>
+      <div class="int-stat">
+        <div class="int-stat-item"><div class="int-stat-val">–8,7 kg</div><div class="int-stat-lbl">Gewichtsreduktion<br>über 2 Jahre</div></div>
+        <div class="int-stat-item"><div class="int-stat-val">↓</div><div class="int-stat-lbl">Biologisches Alter<br>nachweislich verlangsamt</div></div>
+      </div>
+    </div>
+    <div class="intervention-card">
+      <span class="int-number">06</span>
+      <div class="int-tag">Soziale Gesundheit</div>
+      <h3 class="int-title">Einsamkeit als Risikofaktor</h3>
+      <p class="int-body">Holt-Lunstad (2021): soziale Isolation erhöht das Mortalitätsrisiko äquivalent zum Rauchen von 15 Zigaretten täglich. Wir erfassen soziale Einbindung mit der UCLA Loneliness Scale und integrieren Social Prescribing.</p>
+      <div class="int-stat">
+        <div class="int-stat-item"><div class="int-stat-val">≙ 15</div><div class="int-stat-lbl">Zigaretten/Tag<br>Mortalitätsäquivalent</div></div>
+        <div class="int-stat-item"><div class="int-stat-val">UCLA</div><div class="int-stat-lbl">Einsamkeitsskala<br>als Routinescreening</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OMEGA-3 -->
+<section class="omega">
+  <span class="section-tag">Omega-3 Schwerpunkt</span>
+  <h2 class="section-title fade-up">Omega-3-Fettsäuren:<br><em>Was die Evidenz wirklich zeigt</em></h2>
+  <p class="section-intro fade-up">Vier aktuelle PubMed-Publikationen (2021–2025) liefern ein konsistentes Bild: Höherer Omega-3-Status ist mit verlangsamtem biologischem Altern und niedrigerer Gesamtmortalität assoziiert. Für Ihre eigene Messung: unser <a href="omegalab-shop.html" target="_blank" style="color:var(--gold-lt);text-decoration:underline;">OmegaLab-Analyse-Service</a>.</p>
+  <div class="omega-grid">
+    <div class="omega-studies">
+      <div class="omega-study">
+        <div class="omega-study-meta">PMID 33888689 · Nature Communications 2021 · Harris et al.</div>
+        <h4>Zirkulierende Omega-3-Spiegel & Gesamtmortalität</h4>
+        <p>Poolanalyse von 17 prospektiven Kohorten (n=42.466; 15.720 Todesfälle; medianes Follow-up 16 Jahre). Höchstes vs. niedrigstes Quintil EPA/DHA/DPA: 15–18% niedrigere Gesamtmortalität (p&lt;0,003). Kein Effekt für ALA.</p>
+        <span class="omega-confidence">Konfidenz: Hoch (Assoziation) · Moderat (Kausalität)</span>
+      </div>
+      <div class="omega-study">
+        <div class="omega-study-meta">PMID 39900648 · Nature Aging 2025 · Bischoff-Ferrari et al.</div>
+        <h4>DO-HEALTH RCT: Omega-3 & epigenetische Uhren</h4>
+        <p>Post-hoc-Analyse, n=777, ≥70 Jahre, 1g/Tag Omega-3 über 3 Jahre. Verlangsamung von 3/4 DNA-Methylierungsuhren (PhenoAge, GrimAge2, DunedinPACE). Effektgröße: 2,9–3,8 Monate biologische Altersdifferenz.</p>
+        <span class="omega-confidence">Konfidenz: Moderat · Post-hoc · Surrogatendpunkte</span>
+      </div>
+      <div class="omega-study">
+        <div class="omega-study-meta">PMID 40057623 · Aging Clin Exp Res 2025 · Shan et al.</div>
+        <h4>NHANES: Serum-PUFAs, PhenoAge & Entzündung</h4>
+        <p>Querschnittsstudie (n=3.376). 8/12 PUFAs signifikant invers mit PhenoAge-Akzeleration assoziiert; DHA mit stärkstem Effekt. SII als partieller Mediator (Anti-inflammatorischer Mechanismus).</p>
+        <span class="omega-confidence">Konfidenz: Niedrig–Moderat · Querschnittsdesign</span>
+      </div>
+      <div class="omega-study">
+        <div class="omega-study-meta">PMID 41016118 · Nutrition Research 2025 · Bountziouka et al.</div>
+        <h4>UK Biobank: n-3-PUFA & Telomerlänge (n=143.553)</h4>
+        <p>Substitutionsmodell: Empfohlene n-3-PUFA-Zufuhr assoziiert mit Telomerlängendifferenz äquivalent zu ~2 Jahren altersbedingter Verkürzung (p&lt;0,0001). Kein Effekt für MUFA.</p>
+        <span class="omega-confidence">Konfidenz: Niedrig–Moderat · Querschnittsdesign</span>
+      </div>
+    </div>
+    <div class="omega-right">
+      <div class="omega-callout">
+        <h3>Unsere klinische Empfehlung</h3>
+        <p>Langkettige marine Omega-3-Fettsäuren (EPA und DHA) sind in unserer Interventionshierarchie auf Stufe 2 eingestuft. Primärstrategie: ≥2 Portionen fetter Fisch/Woche. Bei geringem Fischkonsum: 1–2 g EPA+DHA/Tag als Supplementierung – gestützt durch den DO-HEALTH-Trial.</p>
+      </div>
+      <div class="omega-index-box">
+        <h4>Omega-3-Index als Biomarker</h4>
+        <p>Wir messen den Omega-3-Index (% EPA+DHA in Erythrozytenmembranen) als optionalen Verlaufsparameter. Ein Wert von ≥8% ist in Observationsdaten mit dem niedrigsten kardiovaskulären Risiko assoziiert. Ihre eigene Messung: OmegaLab-Service der MHB Fontane.</p>
+        <div class="omega-target">
+          <span class="omega-target-num">≥ 8%</span>
+          <span class="omega-target-desc">EPA+DHA in<br>Erythrozytenmembranen<br>Zielwert</span>
+        </div>
+      </div>
+      <br>
+      <a href="omegalab-shop.html" target="_blank" style="display:block;padding:1.4rem 1.8rem;background:rgba(184,150,90,0.2);border:1px solid var(--gold-lt);text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(184,150,90,0.3)'" onmouseout="this.style.background='rgba(184,150,90,0.2)'">
+        <div style="font-size:0.7rem;color:var(--gold-lt);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem;">OmegaLab · MHB Fontane</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--white);font-weight:600;margin-bottom:0.4rem;">Ihren Omega-3-Index messen lassen →</div>
+        <div style="font-size:0.82rem;color:rgba(255,255,255,0.65);">GC-FID-Analyse aus getrocknetem Blut · Einfach, präzise, klinisch validiert</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- PREVENTION -->
+<section class="prevention" id="praevention">
+  <span class="section-tag">Klassische Prävention</span>
+  <h2 class="section-title">Lipide, Karzinome und <em>metabolische Gesundheit</em></h2>
+  <p class="section-intro">Langlebigkeitsmedizin ohne klassische Präventionsmedizin ist unvollständig. Die größten vermeidbaren Mortalitätslast-Treiber bleiben Herz-Kreislauf-Erkrankungen und Karzinome.</p>
+  <div class="prevention-grid fade-up">
+    <div class="prev-card">
+      <div class="prev-card-accent cancer"></div>
+      <div class="prev-card-sub">Onkologische Prävention</div>
+      <h3>Krebsfrüherkennung</h3>
+      <p>Strukturiertes Screening nach S3-Leitlinien und AWMF-Empfehlungen.</p>
+      <ul class="prev-list">
+        <li>Koloskopie ab 50 J. (alle 10 Jahre) / FIT-Test jährlich</li>
+        <li>Mammographie-Screening 50–75 Jahre (alle 2 Jahre)</li>
+        <li>PSA-Testung individuell nach Aufklärung (ab 45 J.)</li>
+        <li>Lungenkrebs-CT (Low-dose) bei Hochrisiko-Rauchern</li>
+        <li>Hautkrebs-Screening alle 2 Jahre ab 35 Jahren</li>
+        <li>Zervixkarzinom-Screening (Pap + HPV-Cotesting)</li>
+        <li>Lebersonographie bei MASLD-Risiko</li>
+      </ul>
+    </div>
+    <div class="prev-card">
+      <div class="prev-card-accent lipid"></div>
+      <div class="prev-card-sub">Kardiovaskuläre Prävention</div>
+      <h3>Lipid- & Gefäßgesundheit</h3>
+      <p>Erhöhtes LDL-Cholesterin und ApoB sind kausal für atherosklerotische Herzerkrankungen. Statin-Therapie und neuere Optionen reduzieren kardiovaskuläre Ereignisse signifikant.</p>
+      <ul class="prev-list">
+        <li>ApoB als primärer atherogener Lipidmarker</li>
+        <li>Lp(a) als genetischer Risikofaktor – einmalige Messung</li>
+        <li>Statin-Therapie nach SCORE2-Risikokalkulation</li>
+        <li>Ezetimib-Kombination bei unzureichender Statinrespons</li>
+        <li>PCSK9-Inhibitoren bei familiärer Hypercholesterinämie</li>
+        <li>Blutdruck &lt; 130/80 mmHg als Behandlungsziel</li>
+        <li>Karotis-IMT / Koronarkalk-Score (CAC) bei Indikation</li>
+      </ul>
+    </div>
+    <div class="prev-card">
+      <div class="prev-card-accent meta"></div>
+      <div class="prev-card-sub">Stoffwechsel & Entzündung</div>
+      <h3>Metabolische Optimierung</h3>
+      <p>Insulinresistenz und chronische Inflammation sind zentrale Treiber des beschleunigten biologischen Alterns.</p>
+      <ul class="prev-list">
+        <li>HbA1c und Nüchternglukose als Frühindikator</li>
+        <li>Kontinuierliches Glukosemonitoring (CGM) optional</li>
+        <li>hsCRP als Marker chronischer Systementzündung</li>
+        <li>HOMA-IR zur Insulinresistenz-Quantifizierung</li>
+        <li>DEXA-Körperzusammensetzung (Muskel-/Fettmasse)</li>
+        <li>Omega-3-Index zur Entzündungsmodulation</li>
+        <li>Darmgesundheit / Mikrobiom-Screening bei Indikation</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- BIOMARKERS -->
+<section class="biomarkers" id="biomarker">
+  <span class="section-tag">Diagnostik</span>
+  <h2 class="section-title">Unser <em>Biomarker-Panel</em></h2>
+  <p class="section-intro">Eine evidenzbasierte Auswahl validierter Laborparameter und funktioneller Tests.</p>
+  <div class="biomarker-grid fade-up">
+    <div class="biomarker-cell">
+      <div class="bm-cat">Basis-Labor</div>
+      <div class="bm-items">
+        <div class="bm-item">Blutbild (Differentialblutbild)</div>
+        <div class="bm-item">HbA1c & Nüchternglukose</div>
+        <div class="bm-item">Lipidpanel (LDL, HDL, TG)</div>
+        <div class="bm-item">ApoB & Lp(a)</div>
+        <div class="bm-item">hsCRP (hochsensitiv)</div>
+        <div class="bm-item">eGFR & Kreatinin</div>
+        <div class="bm-item">Homocystein</div>
+        <div class="bm-item">Vitamin B12 & Folsäure</div>
+      </div>
+    </div>
+    <div class="biomarker-cell">
+      <div class="bm-cat">Hormon & Metabolismus</div>
+      <div class="bm-items">
+        <div class="bm-item">IGF-1 (Wachstumshormonachse)</div>
+        <div class="bm-item">DHEAS (Nebennierenalterung)</div>
+        <div class="bm-item">Testosteron / Östradiol</div>
+        <div class="bm-item">TSH / freies T4 & T3</div>
+        <div class="bm-item">25-OH-Vitamin D</div>
+        <div class="bm-item">Insulin / HOMA-IR</div>
+        <div class="bm-item">Kortisol (Tagesprofil optional)</div>
+      </div>
+    </div>
+    <div class="biomarker-cell">
+      <div class="bm-cat">Fortgeschrittene Marker</div>
+      <div class="bm-items">
+        <div class="bm-item">Omega-3-Index (EPA+DHA %)</div>
+        <div class="bm-item">Epigenetische Uhr (DNAm-Alter)</div>
+        <div class="bm-item">Leukozytäre Telomerlänge</div>
+        <div class="bm-item">NAD+-Spiegel (optional)</div>
+        <div class="bm-item">PhenoAge-Algorithmus</div>
+        <div class="bm-item">GrimAge / DunedinPACE</div>
+        <div class="bm-item">Kontinuierliches Glukosemonitoring</div>
+      </div>
+    </div>
+    <div class="biomarker-cell">
+      <div class="bm-cat">Funktionelle Tests</div>
+      <div class="bm-items">
+        <div class="bm-item">Handgriffdynamometrie</div>
+        <div class="bm-item">VO₂max (Spiroergometrie)</div>
+        <div class="bm-item">DEXA-Körperzusammensetzung</div>
+        <div class="bm-item">Kognitive Testbatterie</div>
+        <div class="bm-item">Blutdruck (Langzeitmessung)</div>
+        <div class="bm-item">Pulswellengeschwindigkeit (PWV)</div>
+        <div class="bm-item">Mikrobiom-Analyse (bei Indikation)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process" id="ablauf">
+  <span class="section-tag">Ihr Weg mit uns</span>
+  <h2 class="section-title" style="text-align:center">Wie ein Longevity-Programm <em>abläuft</em></h2>
+  <p class="section-intro" style="text-align:center;margin:0 auto 4rem;">Von der ersten Anamnese bis zur jährlichen Verlaufskontrolle.</p>
+  <div class="process-steps fade-up">
+    <div class="step"><div class="step-num">1</div><h4>Ausführliche Anamnese</h4><p>Krankheitsgeschichte, Familienanamnese, Lebenstilinventar, validierte Fragebögen.</p></div>
+    <div class="step"><div class="step-num">2</div><h4>Biologisches Alter bestimmen</h4><p>Vollständiges Biomarker-Panel, funktionelle Tests, DEXA, optionale epigenetische Uhren.</p></div>
+    <div class="step"><div class="step-num">3</div><h4>Individueller Longevity-Plan</h4><p>Evidenzbasierte, priorisierte Interventionsstrategie – Lebensstil zuerst.</p></div>
+    <div class="step"><div class="step-num">4</div><h4>6-Monats-Kontrolle</h4><p>Biomarker-Verlaufskontrolle, Interventionsanpassung, Laborreview.</p></div>
+    <div class="step"><div class="step-num">5</div><h4>Jährliche Gesamtrevision</h4><p>Tracking des biologischen Altersverlaufs, Update Screening-Kalender.</p></div>
+  </div>
+</section>
+
+<div class="disclaimer fade-up">
+  <strong>Medizinischer Hinweis:</strong> Die auf dieser Website dargestellten Informationen basieren auf publizierten Forschungsergebnissen und dienen der allgemeinen wissenschaftlichen Information. Sie ersetzen keine individuelle ärztliche Beratung. Alle Interventionen werden im klinischen Kontext individuell auf Nutzen und Risiko abgewogen. Tier-4-Interventionen wie Rapamycin werden außerhalb von Studien nicht angeboten.
+</div>
+<br><br>
+
+<!-- CTA -->
+<section class="cta-section" id="kontakt">
+  <h2>Ihr biologisches Alter ist<br><em>keine Schicksalsfrage.</em></h2>
+  <p>Vereinbaren Sie ein unverbindliches Erstgespräch. Wir zeigen Ihnen, wo Sie stehen – und was die Wissenschaft empfiehlt.</p>
+  <div class="cta-group">
+    <a href="mailto:karsten.weylandt@mhb-fontane.de" class="btn-gold">Termin anfragen</a>
+    <a href="#ansatz" class="btn-outline-light">Mehr über unseren Ansatz</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo"><span>L</span>ongevity Klinik · MHB Fontane</div>
+  <p class="footer-note">Alle Empfehlungen basieren auf publizierten Humandaten. Quellen: PubMed · Harris et al. Nat Commun 2021 · Bischoff-Ferrari et al. Nat Aging 2025 · Banach et al. Eur J Prev Cardiol 2023 · Kwon & Belsky Geroscience 2021 u.a. Prof. Dr. Karsten Weylandt · Medizinische Hochschule Brandenburg Theodor Fontane.</p>
+  <div class="footer-links">
+    <a href="#">Impressum</a>
+    <a href="#">Datenschutz</a>
+    <a href="mailto:karsten.weylandt@mhb-fontane.de">Kontakt</a>
+    <a href="memory-spiel.html" target="_blank">Memory-Spiel</a>
+    <a href="omegalab-shop.html" target="_blank">OmegaLab</a>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 40); });
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      e.target.querySelectorAll('.pillar, .tier-row, .intervention-card, .prev-card, .step, .tool-card').forEach((child, i) => {
+        child.style.transitionDelay = `${i * 0.07}s`;
+        child.classList.add('fade-up', 'visible');
+      });
+    }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+const cards = document.querySelectorAll('.hero-card');
+const styleSheet = document.createElement('style');
+styleSheet.textContent = `
+  @keyframes float0 { from { transform: rotate(-2deg) translateY(0); } to { transform: rotate(-2deg) translateY(-8px); } }
+  @keyframes float1 { from { transform: rotate(1deg) translateY(0); } to { transform: rotate(1deg) translateY(-6px); } }
+  @keyframes float2 { from { transform: rotate(0deg) translateY(0); } to { transform: rotate(0deg) translateY(-10px); } }
+`;
+document.head.appendChild(styleSheet);
+cards.forEach((card, i) => { card.style.animation = `float${i} ${3 + i * 0.7}s ease-in-out infinite alternate`; });
+</script>
+</body>
+</html>
