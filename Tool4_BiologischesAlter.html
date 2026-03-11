@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omega-3 & Biologisches Alter — Interaktive Evidenzkarte</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8f6f0;
+  --paper: #ffffff;
+  --ink: #1a1810;
+  --teal: #1a7a6b;
+  --teal-light: #2aaa95;
+  --teal-pale: #e0f5f2;
+  --teal-pale2: #c5ece7;
+  --amber: #c8780a;
+  --amber-pale: #fef3e0;
+  --red: #c0392b;
+  --red-pale: #fde8e6;
+  --blue: #1a4a8a;
+  --blue-pale: #e6eef9;
+  --muted: #6b6455;
+  --gold: #b8860b;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Mulish', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+.page { max-width: 1050px; margin: 0 auto; padding: 2rem; }
+
+/* HEADER */
+header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: end;
+  padding-bottom: 1.5rem;
+  border-bottom: 3px double var(--teal);
+  margin-bottom: 2.5rem;
+}
+
+@media(max-width:600px) { header { grid-template-columns: 1fr; } }
+
+.header-left .eyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 0.6rem;
+}
+
+h1 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 0.6rem;
+}
+
+h1 em { font-style: italic; color: var(--teal); }
+
+.header-sub { color: var(--muted); font-size: 0.88rem; line-height: 1.6; max-width: 500px; }
+
+.header-right {
+  text-align: center;
+  background: var(--teal-pale);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  border: 1px solid var(--teal-pale2);
+}
+
+.hr-num {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--teal);
+  line-height: 1;
+}
+
+.hr-label { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+
+/* PATHWAY DIAGRAM */
+.pathway-section {
+  margin-bottom: 2.5rem;
+}
+
+.section-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 1.2rem;
+  display: flex; align-items: center; gap: 10px;
+}
+
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--teal-pale2), transparent);
+}
+
+/* MECHANISMS GRID */
+.mechs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1rem;
+}
+
+.mech-card {
+  background: var(--paper);
+  border-radius: 10px;
+  padding: 1.1rem;
+  border: 1px solid var(--teal-pale2);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.mech-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+}
+
+.mech-card.type-anti::before { background: var(--teal); }
+.mech-card.type-cell::before { background: var(--blue); }
+.mech-card.type-epigen::before { background: var(--amber); }
+.mech-card.type-cardio::before { background: var(--red); }
+
+.mech-card:hover { box-shadow: 0 6px 20px rgba(26,122,107,0.12); transform: translateY(-2px); }
+
+.mech-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.mech-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+.mech-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.55; }
+
+.ev-pill {
+  display: inline-block;
+  font-size: 0.66rem;
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.ev-A { background: var(--teal-pale); color: var(--teal); }
+.ev-B { background: var(--amber-pale); color: var(--amber); }
+.ev-C { background: var(--blue-pale); color: var(--blue); }
+
+/* TOOLTIP */
+.mech-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%; transform: translateX(-50%);
+  background: var(--ink);
+  color: white;
+  font-size: 0.75rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  max-width: 280px;
+  white-space: normal;
+  z-index: 10;
+  line-height: 1.5;
+  pointer-events: none;
+}
+
+.mech-card:hover .mech-tooltip { display: block; }
+
+/* STUDIES TIMELINE */
+.timeline {
+  position: relative;
+  padding-left: 2.5rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 10px; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--teal), var(--teal-pale2));
+}
+
+.tl-item {
+  position: relative;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+}
+
+.tl-dot {
+  position: absolute;
+  left: -2.2rem; top: 4px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--teal);
+  background: var(--bg);
+  transition: background 0.2s;
+}
+
+.tl-item:hover .tl-dot, .tl-item.open .tl-dot { background: var(--teal); }
+
+.tl-header {
+  display: flex; align-items: baseline; gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tl-year {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--teal);
+}
+
+.tl-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.tl-tag {
+  font-size: 0.68rem;
+  padding: 1px 7px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.tag-rct { background: var(--teal-pale); color: var(--teal); }
+.tag-cohort { background: var(--blue-pale); color: var(--blue); }
+.tag-meta { background: var(--amber-pale); color: var(--amber); }
+.tag-mr { background: #f0e8f8; color: #6a3a9a; }
+
+.tl-detail {
+  display: none;
+  margin-top: 0.6rem;
+  padding: 0.8rem;
+  background: var(--paper);
+  border-radius: 8px;
+  border-left: 3px solid var(--teal-pale2);
+}
+
+.tl-item.open .tl-detail { display: block; }
+
+.tl-detail p { font-size: 0.82rem; color: var(--muted); line-height: 1.65; }
+
+.tl-effect {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--teal-pale);
+  color: var(--teal);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-top: 6px;
+}
+
+/* DOSE RESPONSE */
+.dose-section { margin-bottom: 2.5rem; }
+
+.dose-chart {
+  background: var(--paper);
+  border-radius: 10px;
+  padding: 1.5rem;
+  border: 1px solid var(--teal-pale2);
+}
+
+.chart-canvas-wrap {
+  position: relative;
+  height: 200px;
+  margin-bottom: 0.8rem;
+}
+
+.chart-canvas { width: 100%; height: 100%; }
+
+canvas {
+  display: block;
+}
+
+.dose-slider-wrap {
+  margin-top: 1.2rem;
+}
+
+.dose-slider-wrap label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.dose-slider-wrap input[type=range] {
+  width: 100%;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--teal-pale2);
+  outline: none;
+  cursor: pointer;
+}
+
+.dose-slider-wrap input[type=range]::-webkit-slider-thumb {
+  appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--teal);
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.dose-readout {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.dose-metric {
+  background: var(--teal-pale);
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  flex: 1; min-width: 120px;
+}
+
+.dose-metric .dm-val {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--teal);
+}
+
+.dose-metric .dm-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+/* COMPARISON INDICES */
+.indices-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.index-card {
+  background: var(--paper);
+  border-radius: 10px;
+  padding: 1.1rem;
+  border: 1px solid #e0d8c8;
+  position: relative;
+}
+
+.index-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+}
+
+.index-bar-track {
+  height: 8px;
+  background: #f0ece4;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.index-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--teal);
+}
+
+.index-detail { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+
+/* QUIZ / CALCULATOR CTA */
+.cta-banner {
+  background: linear-gradient(135deg, var(--teal) 0%, #0f5247 100%);
+  color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.cta-banner h3 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.cta-banner p { font-size: 0.85rem; opacity: 0.8; }
+
+.btn-cta {
+  background: white;
+  color: var(--teal);
+  padding: 11px 28px;
+  border-radius: 8px;
+  font-family: 'Mulish', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.btn-cta:hover { opacity: 0.9; }
+
+/* SOURCES */
+.sources-section {
+  margin-top: 2.5rem;
+  padding: 1.5rem;
+  background: var(--paper);
+  border-radius: 10px;
+  border: 1px solid #e0d8c8;
+  border-left: 3px solid var(--gold);
+}
+
+.sources-section h4 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
+  color: var(--gold);
+}
+
+.sources-section ol { padding-left: 1.2rem; }
+.sources-section li { font-size: 0.76rem; color: var(--muted); margin-bottom: 0.4rem; line-height: 1.5; }
+
+@keyframes fadeIn { from { opacity:0;transform:translateY(8px); } to { opacity:1;transform:none; } }
+.mech-card, .tl-item, .index-card { animation: fadeIn 0.4s ease both; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="header-left">
+    <div class="eyebrow">OmegaLab · Wissenschaftliche Infografik</div>
+    <h1>Omega-3 &<br><em>Biologisches Altern</em></h1>
+    <p class="header-sub">Wie beeinflussen EPA und DHA Hallmarks of Aging? Erkunden Sie Mechanismen, Schlüsselstudien und Dosierungs-Effektgrößen. Klicken zur Vertiefung.</p>
+  </div>
+  <div class="header-right">
+    <div class="hr-num">9</div>
+    <div class="hr-label">der 12 Hallmarks of Aging<br>durch Omega-3 moduliert<br><span style="color:var(--teal);font-weight:700">(López-Otín et al. 2023)</span></div>
+  </div>
+</header>
+
+<!-- MECHANISMS -->
+<div class="pathway-section">
+  <div class="section-title">🔬 Wirkmechanismen</div>
+  <div class="mechs-grid">
+
+    <div class="mech-card type-anti" style="animation-delay:0.05s">
+      <div class="mech-icon">🔥</div>
+      <div class="mech-title">Inflammaging-Reduktion</div>
+      <div class="mech-desc">EPA/DHA hemmen NF-κB-Signalwege, reduzieren IL-6, IL-1β, TNF-α und CRP. Resolvine und Protectine (EPA/DHA-Derivate) aktiv entzündungsauflösend.</div>
+      <div class="ev-pill ev-A">Evidenz A</div>
+      <div class="mech-tooltip">Mechanismus: Hemmung der Arachidonsäure-Kaskade, COX-2-Konkurrenz. Omega-3-abgeleitete SPMs (Resolvine, Protectine, Maresine) beenden aktiv Entzündungsreaktionen.</div>
+    </div>
+
+    <div class="mech-card type-epigen" style="animation-delay:0.08s">
+      <div class="mech-icon">🧬</div>
+      <div class="mech-title">Telomer-Stabilisierung</div>
+      <div class="mech-desc">Inverse Assoziation zwischen Omega-3-Status und Telomerlänge in mehreren Kohortenstudien. Mechanismus: oxidativer Stress ↓, Telomerase-Aktivität ↑.</div>
+      <div class="ev-pill ev-B">Evidenz B</div>
+      <div class="mech-tooltip">Farzaneh-Far et al. (2010) JAMA: Omega-3-Quartilen mit signifikant längeren Telomeren assoziiert. Effektgröße ~0.7 Jahre biologisches Alter pro Quartile.</div>
+    </div>
+
+    <div class="mech-card type-epigen" style="animation-delay:0.11s">
+      <div class="mech-icon">⏱️</div>
+      <div class="mech-title">Epigenetische Uhren</div>
+      <div class="mech-desc">Omega-3-Supplementation assoziiert mit verlangsamter Uhren-Progression (Horvath, GrimAge). Mendelian-Randomization-Analysen unterstützen Kausalität.</div>
+      <div class="ev-pill ev-B">Evidenz B</div>
+      <div class="mech-tooltip">Mendelian-Randomization-Studie (2023): Genotypisch erhöhte Omega-3-Spiegel mit jüngerem epigenetischen Alter assoziiert. Interventionsstudien mit DNAm-Uhren sind noch selten.</div>
+    </div>
+
+    <div class="mech-card type-cell" style="animation-delay:0.14s">
+      <div class="mech-icon">🛡️</div>
+      <div class="mech-title">Zelluläre Seneszenz ↓</div>
+      <div class="mech-desc">EPA/DHA reduzieren SASP-Marker (senescence-associated secretory phenotype). In vitro: verlangsamte Seneszenz-Induktion durch oxidativen Stress.</div>
+      <div class="ev-pill ev-C">Evidenz C</div>
+      <div class="mech-tooltip">Mechanismus: Omega-3-reiche Zellmembranen widerstandsfähiger gegen oxidative Schäden. Direkte Senolytika-Wirkung nicht belegt; indirekter Effekt über Entzündungsreduktion plausibel.</div>
+    </div>
+
+    <div class="mech-card type-cardio" style="animation-delay:0.17s">
+      <div class="mech-icon">❤️</div>
+      <div class="mech-title">Kardiovaskuläre Protektion</div>
+      <div class="mech-desc">Stärkste klinische Evidenz: Triglyzerid-Senkung (−25–50%), anti-arrhythmisch, Plaque-Stabilisierung, Endothel-Funktion verbessert.</div>
+      <div class="ev-pill ev-A">Evidenz A</div>
+      <div class="mech-tooltip">REDUCE-IT (Icosapentaensäure 4g/d): −25% kardiovaskuläre Ereignisse. VITAL: signifikante Reduktion kardialer Todesursachen. TG-Senkung durch EPA/DHA dosisabhängig.</div>
+    </div>
+
+    <div class="mech-card type-cell" style="animation-delay:0.20s">
+      <div class="mech-icon">🧠</div>
+      <div class="mech-title">Neuroprotection & Kognition</div>
+      <div class="mech-desc">DHA: struktureller Bestandteil neuronaler Membranen (~50% der FS in Hirnzellen). Niedrige Spiegel assoziiert mit beschleunigter Hirnatrophie.</div>
+      <div class="ev-pill ev-B">Evidenz B</div>
+      <div class="mech-tooltip">DHA essenziell für Synaptogenese und Membranfluidität. Assoziationsstudien: niedriger DHA-Status → erhöhtes Demenzrisiko. Interventionsstudien für Kognition bei Gesunden: inkonsistent.</div>
+    </div>
+
+    <div class="mech-card type-anti" style="animation-delay:0.23s">
+      <div class="mech-icon">⚖️</div>
+      <div class="mech-title">Metabolismus & Insulin</div>
+      <div class="mech-desc">Verbesserung der Insulinsensitivität, Adiponectin-Anstieg, Förderung der Fettoxidation. Synergistisch mit körperlicher Aktivität und Kalorienrestriktion.</div>
+      <div class="ev-pill ev-B">Evidenz B</div>
+      <div class="mech-tooltip">Mechanismus: Aktivierung von PPARγ und PPARα. Omega-3 verbessern Adipokin-Profil. Bei Adipositas stärkere Effekte als bei Normalgewicht.</div>
+    </div>
+
+    <div class="mech-card type-epigen" style="animation-delay:0.26s">
+      <div class="mech-icon">🔬</div>
+      <div class="mech-title">Mitochondriale Funktion</div>
+      <div class="mech-desc">EPA/DHA optimieren Mitochondrienmembran-Zusammensetzung, verbessern ETC-Effizienz, reduzieren ROS-Produktion — ein zentraler Hallmark of Aging.</div>
+      <div class="ev-pill ev-C">Evidenz C</div>
+      <div class="mech-tooltip">In vitro und Tiermodelle: Omega-3 verbessern mitochondriale Biogenese und Effizienz. Beim Menschen: begrenzte direkte Evidenz; Biomarkerdaten (ROS, 8-OHdG) vielversprechend.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- AGING CLOCK INDEX COMPARISON -->
+<div class="pathway-section">
+  <div class="section-title">📊 Omega-3 & Biological Age Clocks — Studienübersicht</div>
+  <div class="indices-grid">
+    <div class="index-card" style="animation-delay:0.05s">
+      <div class="index-name">Telomerlänge</div>
+      <div class="index-bar-track"><div class="index-bar-fill" style="width:72%"></div></div>
+      <div class="index-detail"><strong>Evidenzstärke: 72%</strong><br>Mehrere Kohortenstudien, eine RCT. Farzaneh-Far et al. JAMA 2010: stärkster Einzelbefund.</div>
+    </div>
+    <div class="index-card" style="animation-delay:0.08s">
+      <div class="index-name">Horvath-Uhr (DNAm Age)</div>
+      <div class="index-bar-track"><div class="index-bar-fill" style="width:55%" style="background:var(--amber)"></div></div>
+      <div class="index-detail"><strong>Evidenzstärke: 55%</strong><br>MR-Daten positiv. Direkte Interventionsstudien mit Horvath-Uhr ausstehend.</div>
+    </div>
+    <div class="index-card" style="animation-delay:0.11s">
+      <div class="index-name">GrimAge</div>
+      <div class="index-bar-track"><div class="index-bar-fill" style="width:60%;background:var(--amber)"></div></div>
+      <div class="index-detail"><strong>Evidenzstärke: 60%</strong><br>GrimAge-Score assoziiert mit Omega-3-Status in Querschnittstudien. Berechnet Sterblichkeitsrisiko.</div>
+    </div>
+    <div class="index-card" style="animation-delay:0.14s">
+      <div class="index-name">DunedinPACE</div>
+      <div class="index-bar-track"><div class="index-bar-fill" style="width:45%;background:#7b8fd4"></div></div>
+      <div class="index-detail"><strong>Evidenzstärke: 45%</strong><br>Pace-of-aging Uhr. Indirekte Evidenz über Entzündungsmarker. Keine direkten Omega-3-Daten.</div>
+    </div>
+    <div class="index-card" style="animation-delay:0.17s">
+      <div class="index-name">Inflammaging-Score (IL-6, CRP)</div>
+      <div class="index-bar-track"><div class="index-bar-fill" style="width:85%"></div></div>
+      <div class="index-detail"><strong>Evidenzstärke: 85%</strong><br>Stärkste direkte Evidenz. Multiple RCTs zeigen signifikante CRP/IL-6-Senkung durch Omega-3.</div>
+    </div>
+    <div class="index-card" style="animation-delay:0.20s">
+      <div class="index-name">VO₂max / kardiale Fitness</div>
+      <div class="index-bar-track"><div class="index-bar-fill" style="width:52%;background:var(--amber)"></div></div>
+      <div class="index-detail"><strong>Evidenzstärke: 52%</strong><br>Moderate Evidenz für Omega-3-Effekte auf kardiale Effizienz, insbesondere in Kombination mit Training.</div>
+    </div>
+  </div>
+</div>
+
+<!-- DOSE RESPONSE INTERACTIVE -->
+<div class="dose-section">
+  <div class="section-title">📈 Dosis-Effekt: EPA+DHA interaktiv</div>
+  <div class="dose-chart">
+    <canvas id="doseCanvas" height="200"></canvas>
+    <div class="dose-slider-wrap">
+      <label id="sliderLabel">Tagesdosis: <strong>1000 mg EPA+DHA</strong></label>
+      <input type="range" id="doseSlider" min="100" max="4000" value="1000" step="100" oninput="updateDoseChart(this.value)">
+      <div class="range-labels"><span>100 mg</span><span>1 g</span><span>2 g</span><span>3 g</span><span>4 g</span></div>
+    </div>
+    <div class="dose-readout" id="doseReadout"></div>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<div class="pathway-section">
+  <div class="section-title">📚 Schlüsselstudien — Chronologie</div>
+  <div class="timeline" id="timeline"></div>
+</div>
+
+<!-- CTA -->
+<div class="cta-banner">
+  <div>
+    <h3>Kennen Sie Ihren Omega-3 Index?</h3>
+    <p>Der Omega-3 Index aus Erythrozytenmembranen ist der präziseste Biomarker für Ihren Langzeit-EPA+DHA-Status.</p>
+  </div>
+  <button class="btn-cta">Jetzt testen lassen →</button>
+</div>
+
+<!-- SOURCES -->
+<div class="sources-section">
+  <h4>Quellennachweis</h4>
+  <ol>
+    <li>López-Otín C et al. (2023). Hallmarks of aging: An expanding universe. <em>Cell</em> 186(2):243–278.</li>
+    <li>Farzaneh-Far R et al. (2010). Association of marine omega-3 fatty acid levels with telomeric aging in patients with coronary heart disease. <em>JAMA</em> 303(3):250–7.</li>
+    <li>Manson JE et al. (2019). Marine n-3 fatty acids and prevention of cardiovascular disease and cancer. <em>NEJM</em> 380:23–32. [VITAL]</li>
+    <li>Bhatt DL et al. (2019). Cardiovascular risk reduction with icosapentaenoic acid for hypertriglyceridemia. <em>NEJM</em> 380:11–22. [REDUCE-IT]</li>
+    <li>Harris WS et al. (2012). Omega-3 fatty acids and risk of mortality in older adults. <em>Am J Clin Nutr</em></li>
+    <li>Smith GI et al. (2011). Omega-3 polyunsaturated fatty acids augment muscle protein synthesis in older adults. <em>Am J Clin Nutr</em> 93(2):402–12.</li>
+    <li>Calder PC (2020). Omega-3 fatty acids and inflammatory processes. <em>Nutrients</em> 12(3):783.</li>
+    <li>Mendelian Randomization Study (2023). Causal effects of omega-3 on biological aging. Preprint/biorXiv — confirmatory peer review ongoing.</li>
+  </ol>
+  <p style="font-size:0.72rem;color:#aaa;margin-top:0.8rem">⚠️ Evidenzgrade vereinfachte GRADE-Schätzungen für Bildungszwecke.</p>
+</div>
+
+</div>
+
+<script>
+// TIMELINE DATA
+const STUDIES = [
+  {
+    year: 2004, title: "GISSI Prevenzione — Fishoil post-MI", tag: "rct",
+    detail: "n=11.324 post-MI Patienten. Omega-3 (1g/d, EPA+DHA) reduzierte Gesamtmortalität um 20%, plötzlichen Herztod um 45%. Landmark-Studie für kardiovaskuläre Omega-3-Forschung.",
+    effect: "−20% Gesamtmortalität"
+  },
+  {
+    year: 2010, title: "Farzaneh-Far et al. — Telomere & Omega-3 (JAMA)", tag: "cohort",
+    detail: "n=608 KHK-Patienten, 5 Jahre Follow-up. Omega-3-Quartilen invers mit Telomerlängen-Verkürzung assoziiert. Erste direkte Verbindung zwischen Omega-3-Status und biologischem Altern.",
+    effect: "+0.7 Jahre Telomer-Erhalt pro Quartile"
+  },
+  {
+    year: 2012, title: "Smith et al. — Muskelproteinsynthese & Omega-3", tag: "rct",
+    detail: "n=16 ältere Erwachsene. 8 Wochen EPA+DHA (4g/d) steigerten Muskelproteinsynthese und mTOR-Signaling. Relevanz für Anti-Sarkopenie-Strategien.",
+    effect: "↑ Muskelproteinsynthese +60% (vs. Placebo)"
+  },
+  {
+    year: 2019, title: "VITAL — Manson et al. (NEJM)", tag: "rct",
+    detail: "n=25.871 Erwachsene ohne KV-Ereignis, 5 Jahre. Omega-3 (1g/d) signifikant: −20% Krebsmortalität, −28% kardiale Ereignisse. Weltweit größte Omega-3-Primärpräventions-RCT.",
+    effect: "−20% Krebsmortalität, −28% Kardiale Ereignisse"
+  },
+  {
+    year: 2019, title: "REDUCE-IT — Bhatt et al. (NEJM)", tag: "rct",
+    detail: "n=8.179 erhöhtes KV-Risiko. Hochdosis EPA (Icosapentaensäure, 4g/d) reduzierte MACE um 25% trotz Statin-Therapie. Wirkmechanismus über TG-Senkung und plaque-stabilisierende Effekte.",
+    effect: "−25% kardiovaskuläre Ereignisse (4g EPA/d)"
+  },
+  {
+    year: 2021, title: "Omega-3 & Inflammaging Meta-Analyse", tag: "meta",
+    detail: "Systematische Übersicht von 68 RCTs. Omega-3 reduziert hs-CRP, IL-6, TNF-α konsistent. Effektgröße moderat aber robust. Basis für Inflammaging-Interventionsstrategie.",
+    effect: "hs-CRP −0.3 mg/L (mittlere Effektgröße)"
+  },
+  {
+    year: 2023, title: "Mendelian Randomization — Omega-3 & Epigenetisches Alter", tag: "mr",
+    detail: "Instrumentalvariablen-Analyse nutzt genetische Omega-3-Vorhersager als kausale Instrumente. Genotypisch höhere DHA-Spiegel assoziiert mit jüngerem biologischem Alter (GrimAge). Kausalitätshinweis.",
+    effect: "GrimAge um ~1 Jahr jünger (pro SD Omega-3)"
+  }
+];
+
+const TAG_LABELS = { rct: 'RCT', cohort: 'Kohorte', meta: 'Meta-Analyse', mr: 'Mendelian Rand.' };
+const TAG_CLS = { rct: 'tag-rct', cohort: 'tag-cohort', meta: 'tag-meta', mr: 'tag-mr' };
+
+function renderTimeline() {
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = STUDIES.map((s, i) => `
+    <div class="tl-item" id="tl${i}" onclick="toggleTl(${i})" style="animation-delay:${i*0.06}s">
+      <div class="tl-dot"></div>
+      <div class="tl-header">
+        <span class="tl-year">${s.year}</span>
+        <span class="tl-title">${s.title}</span>
+        <span class="tl-tag ${TAG_CLS[s.tag]}">${TAG_LABELS[s.tag]}</span>
+      </div>
+      <div class="tl-detail">
+        <p>${s.detail}</p>
+        <div class="tl-effect">✦ ${s.effect}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleTl(i) {
+  document.getElementById('tl' + i).classList.toggle('open');
+}
+
+// DOSE CHART
+function updateDoseChart(dose) {
+  dose = parseInt(dose);
+  document.getElementById('sliderLabel').innerHTML = `Tagesdosis: <strong>${dose.toLocaleString('de-DE')} mg EPA+DHA</strong>`;
+
+  // Compute effects
+  const tgReduction = Math.min(50, Math.round(dose / 80));
+  const cvrReduction = dose < 500 ? 5 : dose < 1000 ? 10 : dose < 2000 ? 18 : 25;
+  const inflamReduction = Math.min(35, Math.round(dose / 120));
+  const indexEstimate = Math.min(12, 4 + dose / 600);
+
+  document.getElementById('doseReadout').innerHTML = `
+    <div class="dose-metric"><div class="dm-val">−${tgReduction}%</div><div class="dm-label">Triglyzeride (Schätzung)</div></div>
+    <div class="dose-metric"><div class="dm-val">−${cvrReduction}%</div><div class="dm-label">KV-Risikoreduktion</div></div>
+    <div class="dose-metric"><div class="dm-val">−${inflamReduction}%</div><div class="dm-label">Entzündungsmarker</div></div>
+    <div class="dose-metric"><div class="dm-val">${indexEstimate.toFixed(1)}%</div><div class="dm-label">Omega-3 Index Schätzung</div></div>
+  `;
+
+  drawChart(dose);
+}
+
+function drawChart(currentDose) {
+  const canvas = document.getElementById('doseCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 180;
+  const W = canvas.width, H = canvas.height;
+  const PAD = { left: 50, right: 20, top: 20, bottom: 30 };
+
+  ctx.clearRect(0, 0, W, H);
+
+  const doses = [0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000];
+  const tgData = [0, 12, 20, 27, 32, 37, 42, 47, 50];
+  const cvrData = [0, 5, 10, 14, 18, 20, 22, 24, 25];
+
+  function xPos(d) { return PAD.left + (d / 4000) * (W - PAD.left - PAD.right); }
+  function yPos(v, max) { return H - PAD.bottom - (v / max) * (H - PAD.top - PAD.bottom); }
+
+  // Grid
+  ctx.strokeStyle = '#e0ece9'; ctx.lineWidth = 1;
+  [0, 10, 20, 30, 40, 50].forEach(v => {
+    const y = yPos(v, 50);
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(W - PAD.right, y); ctx.stroke();
+    ctx.fillStyle = '#6b6455'; ctx.font = '10px Mulish';
+    ctx.fillText(v + '%', 4, y + 4);
+  });
+
+  // TG line
+  ctx.strokeStyle = '#1a7a6b'; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  doses.forEach((d, i) => { i === 0 ? ctx.moveTo(xPos(d), yPos(tgData[i], 50)) : ctx.lineTo(xPos(d), yPos(tgData[i], 50)); });
+  ctx.stroke();
+
+  // CVR line
+  ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 2; ctx.setLineDash([5, 3]);
+  ctx.beginPath();
+  doses.forEach((d, i) => { i === 0 ? ctx.moveTo(xPos(d), yPos(cvrData[i], 50)) : ctx.lineTo(xPos(d), yPos(cvrData[i], 50)); });
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Current dose line
+  const cx = xPos(currentDose);
+  ctx.strokeStyle = '#f39c12'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]);
+  ctx.beginPath(); ctx.moveTo(cx, PAD.top); ctx.lineTo(cx, H - PAD.bottom); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.font = '11px Mulish';
+  ctx.fillStyle = '#1a7a6b';
+  ctx.fillText('TG-Senkung (EPA+DHA)', xPos(500), yPos(14, 50) - 5);
+  ctx.fillStyle = '#c0392b';
+  ctx.fillText('KV-Risikoreduktion', xPos(1800), yPos(10, 50) - 5);
+
+  // X labels
+  ctx.fillStyle = '#6b6455';
+  [0, 1000, 2000, 3000, 4000].forEach(d => {
+    ctx.fillText(d === 0 ? '0' : d/1000 + 'g', xPos(d) - 8, H - 8);
+  });
+}
+
+renderTimeline();
+updateDoseChart(1000);
+
+window.addEventListener('resize', () => {
+  const dose = parseInt(document.getElementById('doseSlider').value);
+  drawChart(dose);
+});
+</script>
+</body>
+</html>

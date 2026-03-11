@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omega-3 Bedarfsrechner — EPA & DHA optimal dosieren</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ocean: #0a2540;
+  --deep: #061a30;
+  --surface: #0f3460;
+  --wave: #1a5276;
+  --teal: #1abc9c;
+  --teal-dim: #0e6b5e;
+  --gold: #f39c12;
+  --gold-dim: #7a4d09;
+  --foam: #d6eaf8;
+  --text: #e8f4f8;
+  --muted: #7fb3d3;
+  --white: #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--deep);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 100% 60% at 50% -10%, rgba(26,188,156,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(26,82,118,0.3) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.page { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; padding: 2rem; }
+
+header {
+  text-align: center;
+  padding: 2.5rem 0 2rem;
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 0.8rem;
+}
+
+h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 0.7rem;
+}
+
+h1 em { font-style: italic; color: var(--teal); }
+
+.header-sub {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 300;
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* STEP INDICATOR */
+.steps-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin: 2rem 0;
+}
+
+.step-dot {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--wave);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  position: relative;
+  transition: all 0.3s;
+}
+
+.step-dot.active { border-color: var(--teal); background: var(--teal); color: var(--deep); }
+.step-dot.done { border-color: var(--teal); color: var(--teal); }
+
+.step-line {
+  width: 60px; height: 2px;
+  background: var(--wave);
+  align-self: center;
+  transition: background 0.3s;
+}
+.step-line.done { background: var(--teal); }
+
+/* CARD */
+.card {
+  background: rgba(10,37,64,0.8);
+  border: 1px solid rgba(26,188,156,0.15);
+  border-radius: 16px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  margin-bottom: 1.5rem;
+}
+
+.card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--teal);
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* FORM ELEMENTS */
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+
+@media(max-width:550px) { .field-grid { grid-template-columns: 1fr; } }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.field input[type=number],
+.field select {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(26,188,156,0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.field input:focus, .field select:focus { border-color: var(--teal); }
+.field select option { background: var(--ocean); }
+
+/* RANGE */
+.range-wrap { position: relative; }
+
+.range-wrap input[type=range] {
+  width: 100%;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--wave);
+  outline: none;
+  cursor: pointer;
+}
+
+.range-wrap input[type=range]::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--teal);
+  cursor: pointer;
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* TOGGLE GROUP */
+.toggle-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.toggle-btn {
+  padding: 7px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(26,188,156,0.2);
+  background: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-btn.active {
+  background: var(--teal-dim);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+/* CHECKBOX */
+.check-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+@media(max-width:450px) { .check-grid { grid-template-columns: 1fr; } }
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(26,188,156,0.1);
+  transition: background 0.2s;
+}
+
+.check-item:hover { background: rgba(26,188,156,0.05); }
+.check-item input { accent-color: var(--teal); width: 15px; height: 15px; }
+.check-item span { font-size: 0.83rem; color: var(--muted); }
+
+/* BUTTON */
+.btn-calc {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--teal), #16a085);
+  border: none;
+  border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--deep);
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  margin-top: 1rem;
+}
+
+.btn-calc:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* RESULT */
+#resultSection { display: none; }
+
+.result-hero {
+  text-align: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(26,188,156,0.1), rgba(26,82,118,0.2));
+  border-radius: 12px;
+  border: 1px solid rgba(26,188,156,0.25);
+  margin-bottom: 1.5rem;
+}
+
+.result-dose {
+  font-family: 'Fraunces', serif;
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--teal);
+  line-height: 1;
+}
+
+.result-unit { font-size: 1.2rem; color: var(--muted); margin-bottom: 0.3rem; }
+.result-label { font-size: 0.85rem; color: var(--muted); }
+
+.result-split {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.split-item {
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  padding: 0.7rem 1.2rem;
+  text-align: center;
+}
+
+.split-item .sv { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 600; }
+.split-item .sl { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+.epa-color { color: #5dade2; }
+.dha-color { color: #a29bfe; }
+
+.result-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media(max-width:500px) { .result-metrics { grid-template-columns: 1fr 1fr; } }
+
+.res-metric {
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 1rem;
+  border: 1px solid rgba(26,188,156,0.1);
+}
+
+.res-metric .rm-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.res-metric .rm-val {
+  font-family: 'Fraunces', serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.res-metric .rm-note { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+/* SUPPLEMENT GUIDE */
+.supp-guide h4 {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 1rem;
+}
+
+.supp-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.supp-table th { text-align: left; padding: 6px 10px; background: rgba(26,188,156,0.1); color: var(--teal); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.supp-table td { padding: 7px 10px; border-bottom: 1px solid rgba(26,188,156,0.08); color: var(--muted); }
+.supp-table tr:last-child td { border: none; }
+.supp-table .highlight { color: var(--text); font-weight: 500; }
+
+/* DISCLAIMER */
+.disclaimer {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: rgba(243,156,18,0.06);
+  border: 1px solid rgba(243,156,18,0.2);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: rgba(243,156,18,0.7);
+  line-height: 1.6;
+}
+
+/* RESET */
+.btn-reset {
+  display: block;
+  margin: 1rem auto 0;
+  padding: 8px 24px;
+  background: none;
+  border: 1px solid rgba(26,188,156,0.3);
+  border-radius: 6px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color: var(--teal);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-reset:hover { background: rgba(26,188,156,0.08); }
+
+/* SOURCES */
+.sources-card {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(10,37,64,0.6);
+  border-radius: 10px;
+  border-left: 3px solid var(--gold-dim);
+}
+
+.sources-card h4 {
+  font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 0.8rem;
+}
+
+.sources-card ol { padding-left: 1.2rem; }
+.sources-card li { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.4rem; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="eyebrow">OmegaLab · Interaktiver Rechner</div>
+  <h1>Wie viel <em>Omega-3</em><br>brauche ich?</h1>
+  <p class="header-sub">Berechnen Sie Ihren individuellen EPA+DHA-Bedarf basierend auf Gesundheitsprofil, Ernährungsgewohnheiten und medizinischen Leitlinien.</p>
+</header>
+
+<div class="steps-indicator" id="stepsInd">
+  <div class="step-dot active" id="sd1">1</div>
+  <div class="step-line" id="sl1"></div>
+  <div class="step-dot" id="sd2">2</div>
+  <div class="step-line" id="sl2"></div>
+  <div class="step-dot" id="sd3">3</div>
+</div>
+
+<!-- STEP 1 -->
+<div class="card" id="step1">
+  <div class="card-title">👤 Persönliches Profil</div>
+  <div class="field-grid">
+    <div class="field">
+      <label>Alter</label>
+      <input type="number" id="age" min="18" max="100" placeholder="z.B. 45" value="45">
+    </div>
+    <div class="field">
+      <label>Biologisches Geschlecht</label>
+      <select id="sex">
+        <option value="m">Männlich</option>
+        <option value="f">Weiblich</option>
+        <option value="f_preg">Schwanger</option>
+        <option value="f_lac">Stillend</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Körpergewicht (kg)</label>
+      <input type="number" id="weight" min="40" max="200" placeholder="70" value="75">
+    </div>
+    <div class="field">
+      <label>Aktueller Omega-3 Status</label>
+      <select id="status">
+        <option value="unknown">Unbekannt</option>
+        <option value="low">&lt;4% (erhöhtes Risiko)</option>
+        <option value="med">4–8% (intermediär)</option>
+        <option value="good">≥8% (optimal)</option>
+      </select>
+    </div>
+  </div>
+  <div style="margin-top:1.2rem">
+    <div class="field">
+      <label>Fischkonsum pro Woche</label>
+      <div class="toggle-group" id="fishGroup">
+        <button class="toggle-btn active" onclick="setToggle('fishGroup',this,'none')">Kein Fisch</button>
+        <button class="toggle-btn" onclick="setToggle('fishGroup',this,'once')">1× Fisch</button>
+        <button class="toggle-btn" onclick="setToggle('fishGroup',this,'twice')">2× Fisch</button>
+        <button class="toggle-btn" onclick="setToggle('fishGroup',this,'more')">3× oder mehr</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="card" id="step2">
+  <div class="card-title">🏥 Gesundheitsprofil</div>
+  <div style="margin-bottom:1.2rem">
+    <label style="font-size:0.8rem;color:var(--muted);display:block;margin-bottom:8px">Relevante Erkrankungen / Risikofaktoren:</label>
+    <div class="check-grid">
+      <label class="check-item"><input type="checkbox" id="cv" value="cv"><span>Kardiovaskuläre Erkrankung</span></label>
+      <label class="check-item"><input type="checkbox" id="hytg" value="hytg"><span>Hypertriglyzeridämie</span></label>
+      <label class="check-item"><input type="checkbox" id="dep" value="dep"><span>Depression / Stimmung</span></label>
+      <label class="check-item"><input type="checkbox" id="inflam" value="inflam"><span>Entzündliche Erkrankung</span></label>
+      <label class="check-item"><input type="checkbox" id="cogn" value="cogn"><span>Kognition / Neurologie</span></label>
+      <label class="check-item"><input type="checkbox" id="longevity" value="longevity"><span>Longevity-Optimierung</span></label>
+    </div>
+  </div>
+  <div class="field">
+    <label>Aktuelle Supplementation</label>
+    <div class="toggle-group" id="suppGroup">
+      <button class="toggle-btn active" onclick="setToggle('suppGroup',this,'none')">Keine</button>
+      <button class="toggle-btn" onclick="setToggle('suppGroup',this,'low')">< 500 mg EPA+DHA/d</button>
+      <button class="toggle-btn" onclick="setToggle('suppGroup',this,'med')">500–1000 mg/d</button>
+      <button class="toggle-btn" onclick="setToggle('suppGroup',this,'high')">1000–2000 mg/d</button>
+      <button class="toggle-btn" onclick="setToggle('suppGroup',this,'rx')">&gt; 2000 mg/d</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="card" id="step3">
+  <div class="card-title">⚖️ Präferenz</div>
+  <div class="field-grid">
+    <div class="field">
+      <label>Supplementform</label>
+      <select id="suppForm">
+        <option value="fish">Fischöl (TG-Form)</option>
+        <option value="ethyl">Fischöl (EE-Form)</option>
+        <option value="krill">Krill-Öl (Phospholipide)</option>
+        <option value="algae">Algenöl (vegan, DHA-reich)</option>
+        <option value="pharma">Pharmakologisch (Rx, EPA)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Ziel</label>
+      <select id="goal">
+        <option value="maintain">Status erhalten</option>
+        <option value="improve">Omega-3 Index erhöhen</option>
+        <option value="optimal">≥8% Zielwert erreichen</option>
+        <option value="cv">Kardiovaskuläre Primärprävention</option>
+        <option value="tg">Triglyzeride senken</option>
+      </select>
+    </div>
+  </div>
+  <button class="btn-calc" onclick="calculate()">🔬 Bedarf berechnen</button>
+</div>
+
+<!-- RESULT -->
+<div id="resultSection">
+  <div class="card">
+    <div class="result-hero">
+      <div class="result-unit">Empfohlene Tagesdosis</div>
+      <div class="result-dose" id="totalDose">—</div>
+      <div class="result-label">mg EPA + DHA pro Tag</div>
+      <div class="result-split" id="splitDisplay"></div>
+    </div>
+
+    <div class="result-metrics" id="metricsDisplay"></div>
+
+    <div class="supp-guide">
+      <h4>Supplement-Leitfaden für Ihre Dosierung</h4>
+      <table class="supp-table" id="suppTable"></table>
+    </div>
+
+    <div class="disclaimer">
+      ⚕️ Dieser Rechner basiert auf publizierten Leitlinien und Referenzwerten (DGE, ESC, WHO, ISSFAL). Er ersetzt keine ärztliche Beratung. Bei kardiovaskulären Erkrankungen oder Triglyzerid-Werten >500 mg/dl ist eine ärztliche Rücksprache erforderlich. Für eine objektive Statusbestimmung empfehlen wir den Omega-3 Index Test.
+    </div>
+
+    <button class="btn-reset" onclick="resetCalc()">← Neue Berechnung</button>
+  </div>
+
+  <div class="sources-card">
+    <h4>Berechnungsgrundlagen & Literatur</h4>
+    <ol>
+      <li>Deutsche Gesellschaft für Ernährung (2015). D-A-CH Referenzwerte: Empfehlung 250 mg EPA+DHA/Tag für Erwachsene.</li>
+      <li>ISSFAL (2020). Recommendations for general population: 500 mg EPA+DHA/day. issfal.org</li>
+      <li>ESC Guidelines (2021). Triglyzeride >1.7 mmol/l: Omega-3 1–4 g/Tag. <em>Eur Heart J</em></li>
+      <li>Harris WS et al. (2009). Omega-3 fatty acids and risk for incident atrial fibrillation. <em>Am J Clin Nutr</em></li>
+      <li>Simopoulos AP (2011). Evolutionary aspects of diet, omega-6/omega-3 ratio. <em>Biomed Pharmacother</em></li>
+      <li>Sublette ME et al. (2011). Meta-analysis of EPA in clinical trials for depression. <em>J Clin Psychiatry</em></li>
+    </ol>
+  </div>
+</div>
+
+</div>
+
+<script>
+let fishVal = 'none';
+let suppVal = 'none';
+
+function setToggle(groupId, btn, val) {
+  document.querySelectorAll(`#${groupId} .toggle-btn`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (groupId === 'fishGroup') fishVal = val;
+  if (groupId === 'suppGroup') suppVal = val;
+}
+
+function calculate() {
+  const age = parseInt(document.getElementById('age').value) || 45;
+  const sex = document.getElementById('sex').value;
+  const weight = parseInt(document.getElementById('weight').value) || 75;
+  const status = document.getElementById('status').value;
+  const cv = document.getElementById('cv').checked;
+  const hytg = document.getElementById('hytg').checked;
+  const dep = document.getElementById('dep').checked;
+  const inflam = document.getElementById('inflam').checked;
+  const cogn = document.getElementById('cogn').checked;
+  const longevity = document.getElementById('longevity').checked;
+  const goal = document.getElementById('goal').value;
+  const suppForm = document.getElementById('suppForm').value;
+
+  // BASE CALCULATION
+  let base = 500; // ISSFAL standard
+  if (sex === 'f_preg') base = 800;
+  if (sex === 'f_lac') base = 600;
+  if (age > 65) base += 200;
+
+  // Fish adjustment
+  const fishAdj = { none: 0, once: -100, twice: -250, more: -400 };
+  base = Math.max(250, base + (fishAdj[fishVal] || 0));
+
+  // Status adjustment
+  if (status === 'low') base = Math.max(base, 2000);
+  else if (status === 'med') base = Math.max(base, 1000);
+
+  // Condition adjustments
+  let condDose = base;
+  let condReason = [];
+
+  if (cv) { condDose = Math.max(condDose, 1000); condReason.push('KV-Erkrankung: ≥1000 mg (ESC)'); }
+  if (hytg) { condDose = Math.max(condDose, 2000); condReason.push('Hypertriglyzeridämie: 2000–4000 mg (ESC)'); }
+  if (dep) { condDose = Math.max(condDose, 1000); condReason.push('Depression: ≥1000 mg EPA (Meta-Analysen)'); }
+  if (inflam) { condDose = Math.max(condDose, 1500); condReason.push('Entzündung: ≥1500 mg empfohlen'); }
+  if (cogn) { condDose = Math.max(condDose, 1000); condReason.push('Kognition: ≥1000 mg DHA-betont'); }
+  if (longevity) { condDose = Math.max(condDose, 1000); condReason.push('Longevity: ≥1000 mg (VITAL-Studie)'); }
+
+  if (goal === 'improve') condDose = Math.max(condDose, 1500);
+  if (goal === 'optimal') condDose = Math.max(condDose, 2000);
+  if (goal === 'tg') condDose = Math.max(condDose, 2000);
+
+  // EPA/DHA split
+  let epaRatio = 0.5;
+  if (dep) epaRatio = 0.65;
+  if (cogn || sex === 'f_preg') epaRatio = 0.35;
+  if (suppForm === 'algae') epaRatio = 0.25;
+
+  const epa = Math.round(condDose * epaRatio / 50) * 50;
+  const dha = condDose - epa;
+
+  // Supplement form guide
+  const forms = {
+    fish: { conc: '~30% EPA+DHA', dose: `${Math.ceil(condDose/300)} Kapseln/Tag (à 1g, 300mg EPA+DHA)`, note: 'TG-Form: beste Bioverfügbarkeit' },
+    ethyl: { conc: '~60% EPA+DHA', dose: `${Math.ceil(condDose/600)} Kapseln/Tag (à 1g, 600mg EPA+DHA)`, note: 'EE-Form: günstig, mit Fett einnehmen' },
+    krill: { conc: '~20% EPA+DHA als PL', dose: `${Math.ceil(condDose/200)} Kapseln/Tag (à 1g, 200mg EPA+DHA)`, note: 'Phospholipide: möglw. besser hirnverfügbar' },
+    algae: { conc: '~20–50% DHA', dose: `${Math.ceil(condDose/250)} Kapseln/Tag (à 1g, 250mg DHA)`, note: 'Vegan; EPA-Gehalt variiert stark' },
+    pharma: { conc: '>90% EPA (Rx)', dose: `${(condDose/1000).toFixed(1)} g/Tag (verschreibungspflichtig)`, note: 'Nur bei ärztlicher Indikation' },
+  };
+  const form = forms[suppForm];
+
+  // DISPLAY
+  document.getElementById('totalDose').textContent = condDose.toLocaleString('de-DE');
+  document.getElementById('splitDisplay').innerHTML = `
+    <div class="split-item"><div class="sv epa-color">${epa} mg</div><div class="sl">EPA</div></div>
+    <div class="split-item"><div class="sv dha-color">${dha} mg</div><div class="sl">DHA</div></div>
+  `;
+
+  // Metrics
+  const metricsData = [
+    { label: 'Empfehlungsgrundlage', val: hytg ? 'ESC Leitlinie' : cv ? 'ESC Prävention' : 'ISSFAL / DGE', note: '' },
+    { label: 'Supplementform', val: ['fish','ethyl'].includes(suppForm) ? 'Fischöl' : suppForm === 'krill' ? 'Krill-Öl' : suppForm === 'algae' ? 'Algenöl' : 'Rx', note: form.note },
+    { label: 'Tagesdosis Kapseln', val: form.dose.split(' ')[0], note: form.dose.split(' ').slice(1).join(' ') },
+  ];
+
+  document.getElementById('metricsDisplay').innerHTML = metricsData.map(m => `
+    <div class="res-metric">
+      <div class="rm-label">${m.label}</div>
+      <div class="rm-val" style="font-size:1rem">${m.val}</div>
+      <div class="rm-note">${m.note}</div>
+    </div>
+  `).join('');
+
+  // Supp table
+  const reasonRows = condReason.length > 0 ? condReason : ['Allgemeine Gesundheitserhaltung'];
+  document.getElementById('suppTable').innerHTML = `
+    <thead><tr><th>Faktor</th><th>Dosierungsgrundlage</th></tr></thead>
+    <tbody>
+    ${reasonRows.map(r => `<tr><td class="highlight">${r.split(':')[0]}</td><td>${r.split(':')[1] || '—'}</td></tr>`).join('')}
+    <tr style="border-top:1px solid rgba(26,188,156,0.2)">
+      <td class="highlight">Konzentrat-Info</td>
+      <td>${form.conc} · ${form.note}</td>
+    </tr>
+    <tr>
+      <td class="highlight">Kontrollmessung empfohlen</td>
+      <td>Omega-3 Index nach 3–4 Monaten zur Erfolgskontrolle</td>
+    </tr>
+    </tbody>`;
+
+  // Update step indicators
+  ['sd1','sd2','sd3'].forEach((id,i) => {
+    document.getElementById(id).className = 'step-dot done';
+  });
+  ['sl1','sl2'].forEach(id => { document.getElementById(id).className = 'step-line done'; });
+
+  document.getElementById('resultSection').style.display = 'block';
+  document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetCalc() {
+  document.getElementById('resultSection').style.display = 'none';
+  ['sd1','sd2','sd3'].forEach((id,i) => {
+    document.getElementById(id).className = i===0 ? 'step-dot active' : 'step-dot';
+  });
+  ['sl1','sl2'].forEach(id => { document.getElementById(id).className = 'step-line'; });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

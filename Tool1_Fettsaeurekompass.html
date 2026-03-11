@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fettsäurekompass — Speiseöle im Vergleich</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1c1a14;
+  --paper: #f5f0e8;
+  --cream: #ede7d6;
+  --gold: #b8860b;
+  --gold-light: #d4a838;
+  --teal: #2a6b5e;
+  --teal-light: #3d8c7c;
+  --red: #8b3a2a;
+  --amber: #c97c1a;
+  --blue: #2a4a7a;
+  --purple: #5a3a7a;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Karla', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0; opacity: 0.4;
+}
+
+.wrap { position: relative; z-index: 1; }
+
+header {
+  padding: 3rem 2rem 2rem;
+  text-align: center;
+  border-bottom: 2px solid var(--gold);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.header-eyebrow {
+  font-family: 'Karla', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.8rem;
+}
+
+h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--ink);
+  margin-bottom: 0.6rem;
+}
+
+h1 em {
+  font-style: italic;
+  color: var(--teal);
+}
+
+.header-sub {
+  color: #6b6455;
+  font-size: 0.95rem;
+  font-weight: 300;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* LEGEND */
+.legend {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+  padding: 1rem 1.5rem;
+  background: var(--cream);
+  border-radius: var(--radius);
+  border: 1px solid rgba(184,134,11,0.2);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.legend-swatch {
+  width: 14px; height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* FILTER TABS */
+.filter-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.filter-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1.5px solid rgba(184,134,11,0.3);
+  background: none;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6b6455;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-btn.active, .filter-btn:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+/* SORT */
+.sort-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.sort-label { font-size: 0.8rem; color: #6b6455; }
+
+.sort-btn {
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(184,134,11,0.3);
+  background: none;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.78rem;
+  cursor: pointer;
+  color: var(--ink);
+  transition: all 0.15s;
+}
+.sort-btn.active { background: var(--gold); border-color: var(--gold); color: white; }
+
+/* OIL CARDS */
+.oils-grid {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.oil-card {
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid rgba(184,134,11,0.15);
+  overflow: hidden;
+  transition: box-shadow 0.25s, transform 0.2s;
+  cursor: pointer;
+}
+
+.oil-card:hover {
+  box-shadow: 0 8px 32px rgba(42,107,94,0.12);
+  transform: translateY(-2px);
+}
+
+.oil-card.expanded {
+  box-shadow: 0 12px 40px rgba(42,107,94,0.15);
+}
+
+.oil-header {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  align-items: center;
+  padding: 1rem 1.2rem;
+  gap: 1rem;
+}
+
+@media(max-width:600px) { .oil-header { grid-template-columns: 1fr; } }
+
+.oil-name-block { }
+.oil-emoji { font-size: 1.6rem; margin-bottom: 2px; }
+.oil-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.oil-latin { font-size: 0.72rem; color: #9b8e7a; font-style: italic; }
+
+.oil-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.oil-tag {
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+.tag-omega3 { background: #d4edea; color: var(--teal); }
+.tag-omega6 { background: #fdf0dc; color: var(--amber); }
+.tag-balanced { background: #e8f4d4; color: #4a7a2a; }
+.tag-sat { background: #f4e4e4; color: var(--red); }
+.tag-mono { background: #e8e4f4; color: var(--purple); }
+
+/* THE BAR */
+.bar-container {
+  flex: 1;
+}
+
+.stacked-bar {
+  height: 32px;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  position: relative;
+}
+
+.bar-seg {
+  height: 100%;
+  transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+}
+
+.bar-seg:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: white;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.seg-sat    { background: #c0392b; }
+.seg-mufa   { background: #8e44ad; }
+.seg-omega6 { background: #d4870a; }
+.seg-omega3 { background: #27ae60; }
+.seg-other  { background: #bdc3c7; }
+
+.bar-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  font-size: 0.7rem;
+  color: #9b8e7a;
+}
+
+/* RATIO BADGE */
+.ratio-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  flex-shrink: 0;
+}
+
+.ratio-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+}
+.ratio-label { font-size: 0.65rem; color: #9b8e7a; text-align: center; margin-top: 2px; }
+.ratio-good { color: var(--teal); }
+.ratio-med  { color: var(--amber); }
+.ratio-bad  { color: var(--red); }
+
+/* DETAIL PANEL */
+.oil-detail {
+  display: none;
+  padding: 0 1.2rem 1.2rem;
+  border-top: 1px solid rgba(184,134,11,0.1);
+  margin-top: 0;
+}
+
+.oil-card.expanded .oil-detail { display: block; }
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.2rem;
+  margin-top: 1rem;
+}
+@media(max-width:700px) { .detail-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width:450px) { .detail-grid { grid-template-columns: 1fr; } }
+
+.detail-block {
+  background: var(--paper);
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+}
+
+.detail-block h4 {
+  font-family: 'Karla', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  margin-bottom: 3px;
+}
+.detail-row .val { font-weight: 600; }
+
+.assessment {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  border-left: 3px solid var(--teal);
+  background: rgba(42,107,94,0.05);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.85rem;
+  color: #3a5248;
+  line-height: 1.6;
+}
+
+/* COMPARISON TABLE */
+.compare-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--gold);
+}
+
+.compare-section h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  margin-bottom: 1.2rem;
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+}
+
+.compare-table th {
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Karla', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.compare-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(184,134,11,0.1);
+}
+
+.compare-table tr:nth-child(even) td { background: rgba(237,231,214,0.4); }
+
+.star { color: var(--gold); }
+.cross { color: var(--red); }
+
+/* QUIZ CALLOUT */
+.quiz-box {
+  margin-top: 3rem;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--radius);
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.quiz-box h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+}
+.quiz-box p { font-size: 0.88rem; color: rgba(245,240,232,0.7); margin-top: 0.3rem; }
+
+.btn-quiz {
+  background: var(--gold-light);
+  color: var(--ink);
+  padding: 11px 26px;
+  border-radius: 7px;
+  font-weight: 600;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.btn-quiz:hover { background: var(--gold); }
+
+/* SOURCES */
+.sources {
+  margin-top: 3rem;
+  padding: 1.5rem;
+  background: var(--cream);
+  border-radius: var(--radius);
+  border-left: 3px solid var(--gold);
+}
+
+.sources h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+}
+
+.sources ol {
+  padding-left: 1.2rem;
+}
+
+.sources li {
+  font-size: 0.78rem;
+  color: #6b6455;
+  margin-bottom: 0.4rem;
+  line-height: 1.5;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.oil-card { animation: slideIn 0.4s ease both; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="header-eyebrow">OmegaLab · Interaktives Tool</div>
+  <h1>Fettsäure<em>kompass</em></h1>
+  <p class="header-sub">Erkunden Sie die Fettsäurezusammensetzung von 16 Speiseölen — von Leinöl bis Kokosöl. Klicken Sie auf ein Öl für Details.</p>
+</header>
+
+<main>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-swatch" style="background:#c0392b"></div>Gesättigte FS</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#8e44ad"></div>Einfach ungesättigt (MUFA)</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#d4870a"></div>Omega-6 (PUFA)</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#27ae60"></div>Omega-3 (PUFA)</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#bdc3c7"></div>Sonstige</div>
+</div>
+
+<div class="filter-row" id="filterRow"></div>
+
+<div class="sort-row">
+  <span class="sort-label">Sortieren nach:</span>
+  <button class="sort-btn active" onclick="sortOils('omega3',this)">Omega-3 ↓</button>
+  <button class="sort-btn" onclick="sortOils('ratio',this)">ω6/ω3-Ratio ↑</button>
+  <button class="sort-btn" onclick="sortOils('name',this)">Name A–Z</button>
+  <button class="sort-btn" onclick="sortOils('mufa',this)">MUFA ↓</button>
+</div>
+
+<div class="oils-grid" id="oilsGrid"></div>
+
+<div class="compare-section">
+  <h2>Schnellvergleich: Omega-3-reichste Öle</h2>
+  <table class="compare-table" id="compareTable"></table>
+</div>
+
+<div class="quiz-box">
+  <div>
+    <h3>Welches Öl passt zu Ihnen?</h3>
+    <p>Starten Sie den Öl-Finder und erhalten Sie eine personalisierte Empfehlung in 3 Fragen.</p>
+  </div>
+  <button class="btn-quiz" onclick="startQuiz()">Öl-Finder starten →</button>
+</div>
+
+<div class="sources">
+  <h4>Quellennachweis</h4>
+  <ol>
+    <li>USDA FoodData Central (2024). Fatty acid profiles of vegetable oils. fdc.nal.usda.gov</li>
+    <li>Simopoulos AP (2002). The importance of the ratio of omega-6/omega-3 essential fatty acids. <em>Biomed Pharmacother</em> 56(8):365–79.</li>
+    <li>Dubois V et al. (2007). Fatty acid profiles of 80 vegetable oils with regard to their nutritional potential. <em>Eur J Lipid Sci Technol</em> 109(7):710–732.</li>
+    <li>Gunstone FD (2011). <em>Vegetable Oils in Food Technology</em>. 2nd ed. Wiley-Blackwell.</li>
+    <li>Deutsche Gesellschaft für Ernährung (DGE) (2015). Referenzwerte Fettsäuren. dge.de</li>
+  </ol>
+</div>
+
+</main>
+</div>
+
+<!-- QUIZ MODAL -->
+<div id="quizModal" style="display:none;position:fixed;inset:0;background:rgba(28,26,20,0.7);z-index:200;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:white;border-radius:12px;padding:2.5rem;max-width:460px;width:100%;position:relative;">
+    <button onclick="document.getElementById('quizModal').style.display='none'" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.3rem;cursor:pointer;color:#999;">✕</button>
+    <div id="quizContent"></div>
+  </div>
+</div>
+
+<script>
+const OILS = [
+  {
+    name: "Leinöl", emoji: "🌾", latin: "Linum usitatissimum",
+    tags: ["omega3"],
+    sat: 9, mufa: 18, omega6: 16, omega3: 53, other: 4,
+    detail: {
+      fatty: [["α-Linolensäure (ALA)", "53 %"], ["Linolsäure (LA)", "16 %"], ["Ölsäure", "18 %"], ["Palmitinsäure", "6 %"]],
+      use: [["Rauchen", "Nicht geeignet"], ["Kalt", "Ideal"], ["Dressing", "Exzellent"]],
+      info: [["Rauchpunkt", "~107 °C"], ["Farbe", "Goldgelb"], ["Geschmack", "Nussig-herb"]]
+    },
+    assessment: "Leinöl ist das omega-3-reichste Pflanzenöl überhaupt. ALA (C18:3n-3) kann im menschlichen Körper in EPA und DHA umgewandelt werden — allerdings mit geringer Effizienz (ca. 5–10 %). Nicht zum Erhitzen. Kühl und dunkel lagern.",
+    category: "pflanzlich-omega3", ratio: 0.3
+  },
+  {
+    name: "Chiaöl", emoji: "🌱", latin: "Salvia hispanica",
+    tags: ["omega3"],
+    sat: 10, mufa: 7, omega6: 19, omega3: 62, other: 2,
+    detail: {
+      fatty: [["α-Linolensäure (ALA)", "62 %"], ["Linolsäure (LA)", "19 %"], ["Ölsäure", "7 %"], ["Palmitinsäure", "7 %"]],
+      use: [["Rauchen", "Nicht geeignet"], ["Kalt", "Ideal"], ["Dressing", "Sehr gut"]],
+      info: [["Rauchpunkt", "~107 °C"], ["Farbe", "Hellgelb"], ["Geschmack", "Mild-nussig"]]
+    },
+    assessment: "Chiaöl übertrifft sogar Leinöl im ALA-Gehalt. Wie alle pflanzlichen Omega-3-Quellen liefert es ALA, nicht die biologisch aktiveren EPA/DHA. Sehr selten im Handel; wertvoll als Supplement.",
+    category: "pflanzlich-omega3", ratio: 0.31
+  },
+  {
+    name: "Walnussöl", emoji: "🌰", latin: "Juglans regia",
+    tags: ["omega3", "omega6"],
+    sat: 9, mufa: 23, omega6: 52, omega3: 13, other: 3,
+    detail: {
+      fatty: [["Linolsäure (LA)", "52 %"], ["α-Linolensäure (ALA)", "13 %"], ["Ölsäure", "23 %"], ["Palmitinsäure", "7 %"]],
+      use: [["Rauchen", "Nicht geeignet"], ["Kalt", "Ideal"], ["Backen", "Aromatisierung"]],
+      info: [["Rauchpunkt", "~160 °C"], ["Farbe", "Bernstein"], ["Geschmack", "Würzig-nussig"]]
+    },
+    assessment: "Gutes ω6/ω3-Verhältnis (4:1) für ein Pflanzenöl. Hochwertiges Küchenaroma, ideal für Salate. Der relativ hohe Linolsäure-Anteil ist bei moderatem Konsum unproblematisch.",
+    category: "pflanzlich-omega3", ratio: 4
+  },
+  {
+    name: "Rapsöl", emoji: "🌻", latin: "Brassica napus",
+    tags: ["omega3", "balanced"],
+    sat: 7, mufa: 62, omega6: 20, omega3: 9, other: 2,
+    detail: {
+      fatty: [["Ölsäure", "62 %"], ["Linolsäure (LA)", "20 %"], ["α-Linolensäure (ALA)", "9 %"], ["Palmitinsäure", "4 %"]],
+      use: [["Braten", "Gut geeignet"], ["Backen", "Ja"], ["Kalt", "Ja"]],
+      info: [["Rauchpunkt", "~204 °C"], ["Farbe", "Hellgelb"], ["Geschmack", "Neutral"]]
+    },
+    assessment: "Rapsöl ist ernährungsphysiologisch eines der besten Alltagsöle: günstiges ω6/ω3-Verhältnis (~2:1), hoher MUFA-Anteil, Hitzestabilität. Von der DGE empfohlen.",
+    category: "pflanzlich-omega3", ratio: 2.2
+  },
+  {
+    name: "Hanföl", emoji: "🌿", latin: "Cannabis sativa",
+    tags: ["omega3", "balanced"],
+    sat: 10, mufa: 12, omega6: 55, omega3: 17, other: 6,
+    detail: {
+      fatty: [["Linolsäure (LA)", "55 %"], ["α-Linolensäure (ALA)", "17 %"], ["γ-Linolensäure (GLA)", "3 %"], ["Ölsäure", "12 %"]],
+      use: [["Rauchen", "Nicht geeignet"], ["Kalt", "Sehr gut"], ["Dressing", "Exzellent"]],
+      info: [["Rauchpunkt", "~165 °C"], ["Farbe", "Dunkelgrün"], ["Geschmack", "Grasig-nussig"]]
+    },
+    assessment: "Hanföl enthält neben ALA und LA auch γ-Linolensäure (GLA, C18:3n-6), die entzündungshemmende Eigenschaften besitzt. Das ω6/ω3-Verhältnis von ~3:1 ist für ein Pflanzenöl ausgezeichnet.",
+    category: "pflanzlich-omega3", ratio: 3.2
+  },
+  {
+    name: "Olivenöl extra virgin", emoji: "🫒", latin: "Olea europaea",
+    tags: ["mono"],
+    sat: 14, mufa: 73, omega6: 10, omega3: 1, other: 2,
+    detail: {
+      fatty: [["Ölsäure", "73 %"], ["Linolsäure (LA)", "10 %"], ["Palmitinsäure", "11 %"], ["α-Linolensäure (ALA)", "1 %"]],
+      use: [["Braten", "Gut"], ["Kalt", "Ideal"], ["Mediterran", "Klassisch"]],
+      info: [["Rauchpunkt", "~190 °C"], ["Farbe", "Grün-gold"], ["Geschmack", "Fruchtig-pfefferig"]]
+    },
+    assessment: "Olivenöl ist kein Omega-3-Öl, aber das beste Öl für den täglichen Kochgebrauch: stabiler MUFA-Anteil, reichhaltige Polyphenole (Oleocanthal, Oleuropein), die antioxidative und antientzündliche Effekte zeigen.",
+    category: "mediterran", ratio: 10
+  },
+  {
+    name: "Avocadoöl", emoji: "🥑", latin: "Persea americana",
+    tags: ["mono"],
+    sat: 12, mufa: 70, omega6: 13, omega3: 1, other: 4,
+    detail: {
+      fatty: [["Ölsäure", "70 %"], ["Linolsäure (LA)", "13 %"], ["Palmitinsäure", "12 %"], ["α-Linolensäure", "1 %"]],
+      use: [["Braten", "Sehr gut"], ["Grillen", "Ideal"], ["Kalt", "Ja"]],
+      info: [["Rauchpunkt", "~250 °C"], ["Farbe", "Hellgrün"], ["Geschmack", "Butterig-mild"]]
+    },
+    assessment: "Mit dem höchsten Rauchpunkt unter den unraffinerten Ölen ideal zum Hochtemperaturbraten. Ähnliches Profil wie Olivenöl. Kein relevanter Omega-3-Gehalt.",
+    category: "mediterran", ratio: 13
+  },
+  {
+    name: "Sonnenblumenöl (hoch-ölsäure)", emoji: "🌻", latin: "Helianthus annuus",
+    tags: ["mono"],
+    sat: 9, mufa: 82, omega6: 4, omega3: 0.2, other: 4.8,
+    detail: {
+      fatty: [["Ölsäure", "82 %"], ["Linolsäure", "4 %"], ["Palmitinsäure", "4 %"], ["Stearinsäure", "5 %"]],
+      use: [["Frittieren", "Sehr gut"], ["Braten", "Sehr gut"], ["Backen", "Ja"]],
+      info: [["Rauchpunkt", "~230 °C"], ["Farbe", "Hellgelb"], ["Geschmack", "Sehr neutral"]]
+    },
+    assessment: "High-oleic Sonnenblumenöl (durch Züchtung auf hohen MUFA-Anteil optimiert) ist hitzestabil und oxidationsstabil. Für Omega-3 irrelevant, aber hervorragend für Hochtemperaturanwendungen.",
+    category: "hitze", ratio: 20
+  },
+  {
+    name: "Sonnenblumenöl (klassisch)", emoji: "🌻", latin: "Helianthus annuus (standard)",
+    tags: ["omega6"],
+    sat: 11, mufa: 25, omega6: 63, omega3: 0.2, other: 0.8,
+    detail: {
+      fatty: [["Linolsäure (LA)", "63 %"], ["Ölsäure", "25 %"], ["Palmitinsäure", "6 %"], ["Stearinsäure", "5 %"]],
+      use: [["Braten", "Mittel"], ["Kalt", "Möglich"], ["Häufig verwendet", "Sehr"]],
+      info: [["Rauchpunkt", "~160 °C"], ["Farbe", "Hellgelb"], ["Geschmack", "Neutral"]]
+    },
+    assessment: "Hoher Linolsäuregehalt (Omega-6). Bei übermäßigem Konsum trägt klassisches Sonnenblumenöl zur ungünstigen Verschiebung des ω6/ω3-Verhältnisses bei — eines der Hauptprobleme der westlichen Ernährung.",
+    category: "omega6-reich", ratio: 315
+  },
+  {
+    name: "Maiskeimöl", emoji: "🌽", latin: "Zea mays",
+    tags: ["omega6"],
+    sat: 13, mufa: 29, omega6: 55, omega3: 1, other: 2,
+    detail: {
+      fatty: [["Linolsäure (LA)", "55 %"], ["Ölsäure", "29 %"], ["Palmitinsäure", "11 %"], ["α-Linolensäure", "1 %"]],
+      use: [["Frittieren", "Häufig"], ["Braten", "Ja"], ["Industriell", "Sehr häufig"]],
+      info: [["Rauchpunkt", "~232 °C"], ["Farbe", "Hellgelb"], ["Geschmack", "Mild"]]
+    },
+    assessment: "Ähnlich problematisches ω6/ω3-Profil wie klassisches Sonnenblumenöl. In der Lebensmittelindustrie weit verbreitet und trägt zum hohen Linolsäure-Intake der westlichen Ernährung bei.",
+    category: "omega6-reich", ratio: 55
+  },
+  {
+    name: "Sesamöl", emoji: "🫙", latin: "Sesamum indicum",
+    tags: ["omega6"],
+    sat: 14, mufa: 40, omega6: 42, omega3: 0.3, other: 3.7,
+    detail: {
+      fatty: [["Linolsäure (LA)", "42 %"], ["Ölsäure", "40 %"], ["Palmitinsäure", "9 %"], ["Stearinsäure", "5 %"]],
+      use: [["Asiatisch", "Klassisch"], ["Aromatisierung", "Ideal"], ["Braten", "Möglich"]],
+      info: [["Rauchpunkt", "~210 °C"], ["Farbe", "Bernstein-dunkel"], ["Geschmack", "Intensiv-nussig"]]
+    },
+    assessment: "Kulinarisch sehr wertvoll durch Lignane (Sesamin, Sesamolin) mit antioxidativen Eigenschaften. Omega-6-reich; als Würzöl in kleinen Mengen unproblematisch.",
+    category: "omega6-reich", ratio: 140
+  },
+  {
+    name: "Kokosöl", emoji: "🥥", latin: "Cocos nucifera",
+    tags: ["sat"],
+    sat: 87, mufa: 6, omega6: 2, omega3: 0, other: 5,
+    detail: {
+      fatty: [["Laurinsäure (C12:0)", "47 %"], ["Myristinsäure (C14:0)", "18 %"], ["Palmitinsäure (C16:0)", "9 %"], ["Ölsäure", "6 %"]],
+      use: [["Backen", "Sehr gut"], ["Braten", "Gut"], ["Vegan-Küche", "Häufig"]],
+      info: [["Rauchpunkt", "~175 °C (nativ)"], ["Farbe", "Weiß/klar"], ["Geschmack", "Kokosnuss"]]
+    },
+    assessment: "Kokosöl enthält hauptsächlich mittelkettige gesättigte Fettsäuren (MCTs), insbesondere Laurinsäure. Trotz intensiver Vermarktung zeigt die Evidenz, dass Kokosöl LDL-Cholesterin erhöht. Die AHA empfiehlt eingeschränkten Konsum. Kein Omega-3.",
+    category: "gesaettigt", ratio: null
+  },
+  {
+    name: "Palmöl (raffiniert)", emoji: "🌴", latin: "Elaeis guineensis",
+    tags: ["sat"],
+    sat: 50, mufa: 37, omega6: 10, omega3: 0.2, other: 2.8,
+    detail: {
+      fatty: [["Palmitinsäure (C16:0)", "44 %"], ["Ölsäure", "37 %"], ["Linolsäure", "10 %"], ["Stearinsäure", "5 %"]],
+      use: [["Industriell", "Sehr häufig"], ["Backen", "Verbreitet"], ["Frittieren", "Häufig"]],
+      info: [["Rauchpunkt", "~235 °C"], ["Farbe", "Orange-rot (roh)"], ["Geschmack", "Neutral (raffiniert)"]]
+    },
+    assessment: "Sehr hoher Palmitinsäure-Anteil, der LDL-erhöhend wirkt. In der Lebensmittelindustrie weit verbreitet. Ökologisch und gesundheitlich problematisch. Nicht zu empfehlen als Haushaltsöl.",
+    category: "gesaettigt", ratio: 50
+  },
+  {
+    name: "Butterreinfett (Ghee)", emoji: "🧈", latin: "Butyrum clarificatum",
+    tags: ["sat"],
+    sat: 65, mufa: 26, omega6: 3, omega3: 1.2, other: 4.8,
+    detail: {
+      fatty: [["Palmitinsäure", "28 %"], ["Ölsäure", "26 %"], ["Stearinsäure", "12 %"], ["Buttersäure (C4:0)", "3.5 %"]],
+      use: [["Braten", "Sehr gut"], ["Indisch", "Klassisch"], ["Backen", "Ja"]],
+      info: [["Rauchpunkt", "~250 °C"], ["Farbe", "Goldgelb"], ["Geschmack", "Butterig-intensiv"]]
+    },
+    assessment: "Ghee enthält kurzkettige Fettsäuren (Buttersäure) mit möglichen darmprotektiven Eigenschaften. Hoher Anteil gesättigter Fettsäuren. Konjugierte Linolsäure (CLA) aus Weidefütterung möglicherweise positiv. Mit Bedacht einsetzen.",
+    category: "tierisch", ratio: 2.5
+  },
+  {
+    name: "Distelöl", emoji: "🌸", latin: "Carthamus tinctorius",
+    tags: ["omega6"],
+    sat: 6, mufa: 14, omega6: 75, omega3: 0.1, other: 4.9,
+    detail: {
+      fatty: [["Linolsäure (LA)", "75 %"], ["Ölsäure", "14 %"], ["Palmitinsäure", "6 %"], ["Stearinsäure", "2 %"]],
+      use: [["Kalt", "Häufig"], ["Kosmetik", "Verbreitet"], ["Braten", "Weniger geeignet"]],
+      info: [["Rauchpunkt", "~150 °C"], ["Farbe", "Blassgelb"], ["Geschmack", "Neutral"]]
+    },
+    assessment: "Höchster Linolsäuregehalt aller gängigen Öle. Ernährungsphysiologisch kein Vorteil gegenüber anderen Omega-6-reichen Ölen bei schlechtem ω6/ω3-Verhältnis. Bei regelmäßigem Konsum problematisch.",
+    category: "omega6-reich", ratio: 750
+  },
+  {
+    name: "Weizenkeimöl", emoji: "🌾", latin: "Triticum aestivum",
+    tags: ["omega3", "omega6"],
+    sat: 18, mufa: 16, omega6: 55, omega3: 7, other: 4,
+    detail: {
+      fatty: [["Linolsäure (LA)", "55 %"], ["Ölsäure", "16 %"], ["α-Linolensäure (ALA)", "7 %"], ["Palmitinsäure", "16 %"]],
+      use: [["Kalt", "Nur kalt"], ["Nährend", "Reich an Vit. E"], ["Supplement", "Häufig"]],
+      info: [["Rauchpunkt", "~160 °C"], ["Farbe", "Goldgelb"], ["Geschmack", "Getreidig-nussig"]]
+    },
+    assessment: "Reichste natürliche Quelle für Vitamin E (Tocopherole). Trotz relevantem ALA-Anteil durch sehr hohen LA-Gehalt insgesamt ungünstiges ω6/ω3-Verhältnis (~8:1). Wertvoll als Supplementöl, nicht als Hauptkochfett.",
+    category: "pflanzlich-omega3", ratio: 7.9
+  }
+];
+
+const CATEGORIES = [
+  { id: "alle", label: "Alle Öle" },
+  { id: "pflanzlich-omega3", label: "Omega-3-reich" },
+  { id: "mediterran", label: "Mediterran" },
+  { id: "hitze", label: "Hitzebeständig" },
+  { id: "omega6-reich", label: "Omega-6-reich" },
+  { id: "gesaettigt", label: "Gesättigte FS" },
+  { id: "tierisch", label: "Tierisch" },
+];
+
+let currentFilter = "alle";
+let currentSort = "omega3";
+let filteredOils = [...OILS];
+
+function buildFilters() {
+  const row = document.getElementById('filterRow');
+  row.innerHTML = CATEGORIES.map(c =>
+    `<button class="filter-btn${c.id === 'alle' ? ' active' : ''}" onclick="filterOils('${c.id}',this)">${c.label}</button>`
+  ).join('');
+}
+
+function filterOils(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilterSort();
+}
+
+function sortOils(by, btn) {
+  currentSort = by;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilterSort();
+}
+
+function applyFilterSort() {
+  filteredOils = OILS.filter(o => currentFilter === 'alle' || o.category === currentFilter);
+  filteredOils.sort((a, b) => {
+    if (currentSort === 'omega3') return b.omega3 - a.omega3;
+    if (currentSort === 'ratio') return (a.ratio || 9999) - (b.ratio || 9999);
+    if (currentSort === 'name') return a.name.localeCompare(b.name);
+    if (currentSort === 'mufa') return b.mufa - a.mufa;
+    return 0;
+  });
+  renderOils();
+}
+
+function ratioColor(r) {
+  if (!r || r > 10) return 'ratio-bad';
+  if (r > 4) return 'ratio-med';
+  return 'ratio-good';
+}
+
+function renderOils() {
+  const grid = document.getElementById('oilsGrid');
+  grid.innerHTML = filteredOils.map((oil, i) => {
+    const tags = oil.tags.map(t => {
+      const labels = { omega3: 'Omega-3-reich', omega6: 'Omega-6-reich', balanced: 'Ausgewogen', sat: 'Gesättigt', mono: 'MUFA-reich' };
+      const cls = { omega3: 'tag-omega3', omega6: 'tag-omega6', balanced: 'tag-balanced', sat: 'tag-sat', mono: 'tag-mono' };
+      return `<span class="oil-tag ${cls[t]}">${labels[t]}</span>`;
+    }).join('');
+
+    const ratioDisp = oil.ratio === null ? '—' : (oil.ratio < 1 ? oil.ratio.toFixed(1) : Math.round(oil.ratio)) + ':1';
+    const rCls = oil.ratio === null ? 'ratio-bad' : ratioColor(oil.ratio);
+
+    const detailRows = (arr) => arr.map(r => `<div class="detail-row"><span>${r[0]}</span><span class="val">${r[1]}</span></div>`).join('');
+
+    return `
+    <div class="oil-card" id="card${i}" onclick="toggleCard(${i})" style="animation-delay:${i*0.04}s">
+      <div class="oil-header">
+        <div class="oil-name-block">
+          <div class="oil-emoji">${oil.emoji}</div>
+          <div class="oil-name">${oil.name}</div>
+          <div class="oil-latin">${oil.latin}</div>
+          <div class="oil-tags">${tags}</div>
+        </div>
+        <div class="bar-container">
+          <div class="stacked-bar">
+            <div class="bar-seg seg-sat" style="width:${oil.sat}%" data-tip="Gesättigt: ${oil.sat}%"></div>
+            <div class="bar-seg seg-mufa" style="width:${oil.mufa}%" data-tip="MUFA: ${oil.mufa}%"></div>
+            <div class="bar-seg seg-omega6" style="width:${oil.omega6}%" data-tip="Omega-6: ${oil.omega6}%"></div>
+            <div class="bar-seg seg-omega3" style="width:${oil.omega3}%" data-tip="Omega-3: ${oil.omega3}%"></div>
+            <div class="bar-seg seg-other" style="width:${oil.other}%" data-tip="Sonstige: ${oil.other}%"></div>
+          </div>
+          <div class="bar-labels">
+            <span>Gesättigt ${oil.sat}%</span>
+            <span>MUFA ${oil.mufa}%</span>
+            <span>ω6 ${oil.omega6}%</span>
+            <span>ω3 ${oil.omega3}%</span>
+          </div>
+        </div>
+        <div class="ratio-badge">
+          <div class="ratio-num ${rCls}">${ratioDisp}</div>
+          <div class="ratio-label">ω6/ω3<br>Ratio</div>
+        </div>
+      </div>
+      <div class="oil-detail">
+        <div class="detail-grid">
+          <div class="detail-block">
+            <h4>Hauptfettsäuren</h4>
+            ${detailRows(oil.detail.fatty)}
+          </div>
+          <div class="detail-block">
+            <h4>Verwendung</h4>
+            ${detailRows(oil.detail.use)}
+          </div>
+          <div class="detail-block">
+            <h4>Eigenschaften</h4>
+            ${detailRows(oil.detail.info)}
+          </div>
+        </div>
+        <div class="assessment">💡 ${oil.assessment}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  renderCompare();
+}
+
+function toggleCard(i) {
+  const card = document.getElementById('card' + i);
+  card.classList.toggle('expanded');
+}
+
+function renderCompare() {
+  const top = [...OILS].sort((a,b) => b.omega3 - a.omega3).slice(0,6);
+  const t = document.getElementById('compareTable');
+  t.innerHTML = `<thead><tr>
+    <th>Öl</th><th>Omega-3 %</th><th>Omega-6 %</th><th>ω6/ω3 Ratio</th><th>Rauchen</th><th>Bewertung</th>
+  </tr></thead><tbody>` +
+  top.map(o => {
+    const rDisp = o.ratio < 1 ? o.ratio.toFixed(1) : Math.round(o.ratio);
+    const rColor = ratioColor(o.ratio);
+    const stars = o.omega3 > 40 ? '★★★' : o.omega3 > 15 ? '★★☆' : '★☆☆';
+    return `<tr>
+      <td><strong>${o.emoji} ${o.name}</strong></td>
+      <td><strong style="color:var(--teal)">${o.omega3}%</strong></td>
+      <td>${o.omega6}%</td>
+      <td class="${rColor}">${rDisp}:1</td>
+      <td>${o.detail.use[0][1]}</td>
+      <td class="star">${stars}</td>
+    </tr>`;
+  }).join('') + '</tbody>';
+}
+
+// QUIZ
+const QUIZ_STEPS = [
+  {
+    q: "Wofür verwenden Sie das Öl hauptsächlich?",
+    opts: ["Kochen & Braten bei hoher Hitze", "Salate & Kaltküche", "Omega-3-Zufuhr optimieren", "Alltags-Kochöl"]
+  },
+  {
+    q: "Was ist Ihr wichtigstes Kriterium?",
+    opts: ["Möglichst viel Omega-3", "Gutes ω6/ω3-Verhältnis", "Hitzestabilität", "Geschmack & Aroma"]
+  },
+  {
+    q: "Wie ist Ihre aktuelle Situation?",
+    opts: ["Ich nehme kein Fischöl und möchte Omega-3 erhöhen", "Ich esse viel Sonnenblumenöl und möchte wechseln", "Ich suche ein mediterranes Alltagsöl", "Ich möchte Fette insgesamt besser verstehen"]
+  }
+];
+
+const QUIZ_RESULTS = {
+  "000": { oil: "Avocadoöl 🥑", reason: "Hitzebeständig, mildes Aroma, ideal zum Hochtemperaturbraten bei gleichzeitig gutem MUFA-Profil." },
+  "100": { oil: "Avocadoöl 🥑 oder High-Oleic Sonnenblumenöl 🌻", reason: "Für hohe Hitze und maximale Stabilität." },
+  "010": { oil: "Leinöl 🌾", reason: "Höchster ALA-Anteil aller Speiseöle. Nur kalt verwenden." },
+  "110": { oil: "Walnussöl 🌰", reason: "Exzellentes ω6/ω3-Verhältnis (~4:1), aromatisch, für Salate ideal." },
+  "020": { oil: "Leinöl 🌾 oder Chiaöl 🌱", reason: "Die omega-3-reichsten Pflanzenöle verfügbar." },
+  "default": { oil: "Rapsöl 🌻", reason: "Das beste Alltagsöl: günstiges ω6/ω3-Verhältnis, hitzebeständig, neutral im Geschmack — von der DGE empfohlen." }
+};
+
+let quizStep = 0;
+let quizAnswers = [];
+
+function startQuiz() {
+  quizStep = 0; quizAnswers = [];
+  document.getElementById('quizModal').style.display = 'flex';
+  renderQuizStep();
+}
+
+function renderQuizStep() {
+  const s = QUIZ_STEPS[quizStep];
+  document.getElementById('quizContent').innerHTML = `
+    <div style="font-size:0.75rem;color:#999;margin-bottom:1rem">Frage ${quizStep+1} / ${QUIZ_STEPS.length}</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;margin-bottom:1.2rem;color:var(--ink)">${s.q}</div>
+    ${s.opts.map((o,i) => `<button onclick="quizAnswer(${i})" style="display:block;width:100%;text-align:left;padding:10px 14px;margin-bottom:8px;border:1.5px solid #e0d8c8;border-radius:7px;background:none;font-family:'Karla',sans-serif;font-size:0.9rem;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--teal)';this.style.background='rgba(42,107,94,0.05)'" onmouseout="this.style.borderColor='#e0d8c8';this.style.background='none'">${o}</button>`).join('')}
+  `;
+}
+
+function quizAnswer(i) {
+  quizAnswers.push(i);
+  quizStep++;
+  if (quizStep < QUIZ_STEPS.length) {
+    renderQuizStep();
+  } else {
+    const key = quizAnswers.join('');
+    const result = QUIZ_RESULTS[key] || QUIZ_RESULTS['default'];
+    document.getElementById('quizContent').innerHTML = `
+      <div style="text-align:center;padding:1rem 0">
+        <div style="font-size:2.5rem;margin-bottom:0.8rem">🎯</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:var(--teal);margin-bottom:0.5rem">Empfehlung</div>
+        <div style="font-size:1.15rem;font-weight:600;margin-bottom:0.8rem">${result.oil}</div>
+        <div style="font-size:0.88rem;color:#6b6455;line-height:1.6;margin-bottom:1.5rem">${result.reason}</div>
+        <div style="font-size:0.78rem;color:#999;padding:0.8rem;background:#f5f0e8;border-radius:6px;margin-bottom:1.2rem">
+          💡 Hinweis: Pflanzliche Omega-3-Öle liefern ALA, nicht EPA/DHA. Für eine direkte Messung Ihres Omega-3-Status empfehlen wir unseren <strong>Omega-3 Index Test</strong>.
+        </div>
+        <button onclick="document.getElementById('quizModal').style.display='none'" style="background:var(--teal);color:white;border:none;padding:11px 28px;border-radius:7px;font-family:'Karla',sans-serif;font-size:0.9rem;cursor:pointer;font-weight:600">Schließen</button>
+      </div>
+    `;
+  }
+}
+
+buildFilters();
+applyFilterSort();
+</script>
+</body>
+</html>
